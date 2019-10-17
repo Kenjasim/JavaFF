@@ -1,4 +1,6 @@
+#Where the script is located
 BASEDIR=$(dirname "$0")
+#Where the shell user actually ran the script from
 ORIGINALDIR=$(pwd)
 cd $BASEDIR
 rm -rf build

@@ -169,11 +169,17 @@ public class JavaFF
 
 		double groundingTime = (afterGrounding - startTime)/1000.00;
 		double planningTime = (afterPlanning - afterGrounding)/1000.00;
+		
 		//double schedulingTime = (afterScheduling - afterPlanning)/1000.00;
-
+		
+		double totalTime = groundingTime + planningTime;
 		infoOutput.println("Instantiation Time =\t\t"+groundingTime+"sec");
 		infoOutput.println("Planning Time =\t"+planningTime+"sec");
-		//infoOutput.println("Scheduling Time =\t"+schedulingTime+"sec");
+		
+		//infoOutput.println("Scheduling Time =\t"+schedulingTime+"sec"); totalTime = totalTime + schedulingTime;
+		
+		infoOutput.println("Total execution time:");
+		infoOutput.println(groundingTime + planningTime);
 
 		
 		return top;
