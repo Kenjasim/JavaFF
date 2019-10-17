@@ -22,6 +22,7 @@ This repo contains a clean and fresh copy of JavaFF for the 2019 AI Planning Mod
 - Do not submit compiled files. This repo has been setup to ignore files compiled with the build script, but if you compile using the command line (`javac`) this might accidentally get committed. **We will not test pre-compiled files and will wipe them before testing**
 - Make sure your team name is spelt correctly when you enter it into the team_name.txt file
 - We will compile and run all submission on an informatics lab machine, it up to you to ensure your code base compiles by submission time!
+- If you use an IDE such as IntelliJ IDEA or Eclipse, your code must still be checked using the CLI scripts provided, it is *not sufficient that it compiles in your chosen IDE*
 
 ## Extended Guide for Command Line shell scripts
 Four scripts are provided as standard with this coursework, two are more important for you than the others, and we provide them for my convenience when testing. 
