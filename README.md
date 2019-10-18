@@ -50,7 +50,7 @@ The `run.sh` script which can be (and should be) used to run your implementation
 To get just the plan in a separate file, you can use `run.sh` like this
 
 ```bash
-<your-javaff-repo-location>/run.sh <your-domain-location> <name-of-output-file>
+<your-javaff-repo-location>/run.sh <your-domain-location> <your-problem-location> <name-of-output-file>
 ```
 
 for example **if I'm in my JavaFF folder** with a terminal already open I can run
@@ -58,6 +58,7 @@ for example **if I'm in my JavaFF folder** with a terminal already open I can ru
 ```bash
 ./run.sh ./pddl/depots/domain.pddl ./pddl/depots/instances/instance-1.pddl
 ```
+(This will run the first instance of the depots domain).
 
 If I also want to save my plan to a file I could write
 
