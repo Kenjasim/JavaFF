@@ -13,16 +13,18 @@ This repo contains a clean and fresh copy of JavaFF for the 2019 AI Planning Mod
 
 **Note: These scripts were written for the Informatics Lab machines, and may not work on your personal machines (and definitely won't work on Windows)**
 
-4. Change the name in the `team_name.txt` file, to your team name *and then commit!* This will help us work out who is in what team
+4. Please add me as a collaborator to your repo, on the repo, go to settings, then add collaborator. My k number is k1502498.
 
-5. Commit all your changes before the deadline, _11th December, 2019, 11:59:59PM GMT_. Any changes committed after this time will be ignored (we will use the commit closest to this time that is not over)
+5. Change the name in the `team_name.txt` file, to your team name - with correct **case-sensitive** spelling - *and then commit!* This will help us work out who is in what team.
+
+6. Commit all your changes before the deadline, _11th December, 2019, 11:59:59PM GMT_. Any changes committed after this time will be ignored (we will use the commit closest to this time that is not over)
 
 ## Rules
 - Do not change the build shell scripts, or the server-build shell script, these are the scripts we will run when we test your code. We will conduct these tests on the lab machines, so if you run the build script on your code on the lab machine and it doesn't compile, you know it won't compile for us
 - Do not submit compiled files. This repo has been setup to ignore files compiled with the build script, but if you compile using the command line (`javac`) this might accidentally get committed. **We will not test pre-compiled files and will wipe them before testing**
 - Make sure your team name is spelt correctly when you enter it into the team_name.txt file
 - We will compile and run all submission on an informatics lab machine, it up to you to ensure your code base compiles by submission time!
-
+- Do not change the README or the scripts provided, in the event that we have to make corrections either to the scripts or to the readme, if you make changes this will make it harder for us to push those changes to your repo. If you put something meaningful in these files, we will force push and overwrite them 
 ## Extended Guide for Command Line shell scripts
 Four scripts are provided as standard with this coursework, two are more important for you than the others, and we provide them for my convenience when testing. 
 
