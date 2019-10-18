@@ -94,7 +94,7 @@ public class EnforcedHillClimbingSearch extends Search
 		open.add(start); // add it to the open list
 		bestHValue = start.getHValue(); // and take its heuristic value as the best so far
 
-		javaff.JavaFF.infoOutput.println(bestHValue);
+		javaff.JavaFF.infoOutput.println("initial heuristic: " + bestHValue);
 		
 		while (!open.isEmpty()) // whilst still states to consider
 		{	

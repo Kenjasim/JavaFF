@@ -180,7 +180,10 @@ public class JavaFF
 		
 		infoOutput.println("Total execution time:");
 		infoOutput.println(groundingTime + planningTime);
-
+		
+		//#cost-problem comment the two lines below
+		infoOutput.println("Plan Cost:");
+		if (top != null) infoOutput.println(top.getCost());
 		
 		return top;
 	}

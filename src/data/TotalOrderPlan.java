@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 
 public class TotalOrderPlan implements Plan, Cloneable
 {
@@ -51,6 +52,15 @@ public class TotalOrderPlan implements Plan, Cloneable
 	public void addAction(Action a)
 	{
 		plan.add(a);
+	}
+
+	public double getCost() {
+		//If this crashes, search #cost-problem and comment out 
+		double cost = 0;
+		for (int i = 0; i < plan.size(); ++i) {
+			cost = cost + ((Action)plan.get(i)).cost.doubleValue();
+		}
+		return cost;
 	}
 
 	public int getPlanLength()

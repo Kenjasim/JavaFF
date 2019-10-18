@@ -43,7 +43,8 @@ public abstract class Action
     public OperatorName name;
     public List params = new ArrayList(); // List of PDDLObjects
 
-	public BigDecimal cost = new BigDecimal(0);
+	//Standard plan costs a minimum one step
+	public BigDecimal cost = new BigDecimal(1);
 
     public String toString()
     {
