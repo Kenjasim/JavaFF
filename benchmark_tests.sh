@@ -16,6 +16,7 @@ then
 fi
 mkdir $OUTDIR
 touch $OUTDIR/results.csv
+echo 'instance,time,initial-heuristic,cost' >> $OUTDIR/results.csv
 echo 'Running Depots Tests...'
 echo 'depots,' >> $OUTDIR/results.csv
 for TEST in {1..22} 
@@ -23,7 +24,12 @@ do
     echo "Running instance "$TEST
     echo -n 'instance-'$TEST >> $OUTDIR/results.csv 
     echo -n ',' >> $OUTDIR/results.csv
-    ./run.sh ./pddl/depots/domain.pddl ./pddl/depots/instances/instance-$TEST.pddl ./$OUTDIR/depots-plan-instance-$TEST.sol | tail -1 >> $OUTDIR/results.csv
+    RESULT=$(./run.sh ./pddl/depots/domain.pddl ./pddl/depots/instances/instance-$TEST.pddl ./$OUTDIR/depots-plan-instance-$TEST.sol)
+    echo -n $(echo "$RESULT" | tail -3 | head -1) >> $OUTDIR/results.csv
+    echo -n ',' >> $OUTDIR/results.csv
+    echo -n $(echo "$RESULT" | head -4 | tail -1 | tr -dc '0-9') >> $OUTDIR/results.csv
+    echo -n ',' >> $OUTDIR/results.csv
+    echo "$RESULT" | tail -1 >> $OUTDIR/results.csv
 done
 
 
@@ -34,7 +40,12 @@ do
     echo "Running instance "$TEST
     echo -n 'instance-'$TEST >> $OUTDIR/results.csv 
     echo -n ',' >> $OUTDIR/results.csv
-    ./run.sh ./pddl/driverlog/domain.pddl ./pddl/driverlog/instances/instance-$TEST.pddl ./$OUTDIR/driverlog-plan-instance-$TEST.sol | tail -1 >> $OUTDIR/results.csv
+    RESULT=$(./run.sh ./pddl/driverlog/domain.pddl ./pddl/driverlog/instances/instance-$TEST.pddl ./$OUTDIR/driverlog-plan-instance-$TEST.sol)
+    echo -n $(echo "$RESULT" | tail -3 | head -1) >> $OUTDIR/results.csv
+    echo -n ',' >> $OUTDIR/results.csv
+    echo -n $(echo "$RESULT" | head -4 | tail -1 | tr -dc '0-9') >> $OUTDIR/results.csv
+    echo -n ',' >> $OUTDIR/results.csv
+    echo "$RESULT" | tail -1 >> $OUTDIR/results.csv
 done
 
 echo 'Running Rovers Tests...'
@@ -44,7 +55,12 @@ do
     echo "Running instance "$TEST
     echo -n 'instance-'$TEST >> $OUTDIR/results.csv 
     echo -n ',' >> $OUTDIR/results.csv
-    ./run.sh ./pddl/rovers/domain.pddl ./pddl/rovers/instances/instance-$TEST.pddl ./$OUTDIR/rovers-plan-instance-$TEST.sol | tail -1 >> $OUTDIR/results.csv
+    RESULT=$(./run.sh ./pddl/rovers/domain.pddl ./pddl/rovers/instances/instance-$TEST.pddl ./$OUTDIR/rovers-plan-instance-$TEST.sol)
+    echo -n $(echo "$RESULT" | tail -3 | head -1) >> $OUTDIR/results.csv
+    echo -n ',' >> $OUTDIR/results.csv
+    echo -n $(echo "$RESULT" | head -4 | tail -1 | tr -dc '0-9') >> $OUTDIR/results.csv
+    echo -n ',' >> $OUTDIR/results.csv
+    echo "$RESULT" | tail -1 >> $OUTDIR/results.csv
 done
 
 echo 'done'
