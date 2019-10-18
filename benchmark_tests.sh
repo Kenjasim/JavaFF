@@ -23,7 +23,7 @@ do
     echo "Running instance "$TEST
     echo -n 'instance-'$TEST >> $OUTDIR/results.csv 
     echo -n ',' >> $OUTDIR/results.csv
-    ./run.sh ./pddl/depots/domain.pddl ./pddl/depots/instances/instance-$TEST.pddl ./$OUTDIR/plan-instance-$TEST.sol | tail -1 >> $OUTDIR/results.csv
+    ./run.sh ./pddl/depots/domain.pddl ./pddl/depots/instances/instance-$TEST.pddl ./$OUTDIR/depots-plan-instance-$TEST.sol | tail -1 >> $OUTDIR/results.csv
 done
 
 
@@ -34,7 +34,7 @@ do
     echo "Running instance "$TEST
     echo -n 'instance-'$TEST >> $OUTDIR/results.csv 
     echo -n ',' >> $OUTDIR/results.csv
-    ./run.sh ./pddl/driverlog/domain.pddl ./pddl/driverlog/instances/instance-$TEST.pddl ./$OUTDIR/plan-instance-$TEST.sol | tail -1 >> $OUTDIR/results.csv
+    ./run.sh ./pddl/driverlog/domain.pddl ./pddl/driverlog/instances/instance-$TEST.pddl ./$OUTDIR/driverlog-plan-instance-$TEST.sol | tail -1 >> $OUTDIR/results.csv
 done
 
 echo 'Running Rovers Tests...'
@@ -44,7 +44,7 @@ do
     echo "Running instance "$TEST
     echo -n 'instance-'$TEST >> $OUTDIR/results.csv 
     echo -n ',' >> $OUTDIR/results.csv
-    ./run.sh ./pddl/driverlog/domain.pddl ./pddl/driverlog/instances/instance-$TEST.pddl ./$OUTDIR/plan-instance-$TEST.sol | tail -1 >> $OUTDIR/results.csv
+    ./run.sh ./pddl/rovers/domain.pddl ./pddl/rovers/instances/instance-$TEST.pddl ./$OUTDIR/rovers-plan-instance-$TEST.sol | tail -1 >> $OUTDIR/results.csv
 done
 
 echo 'done'
