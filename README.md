@@ -25,6 +25,7 @@ This repo contains a clean and fresh copy of JavaFF for the 2019 AI Planning Mod
 - Make sure your team name is spelt correctly when you enter it into the team_name.txt file
 - We will compile and run all submission on an informatics lab machine, it up to you to ensure your code base compiles by submission time!
 - Do not change the README or the scripts provided, in the event that we have to make corrections either to the scripts or to the readme, if you make changes this will make it harder for us to push those changes to your repo. If you put something meaningful in these files, we will force push and overwrite them 
+- If you use an IDE such as IntelliJ IDEA or Eclipse, your code must still be checked using the CLI scripts provided, it is *not sufficient that it compiles in your chosen IDE*
 ## Extended Guide for Command Line shell scripts
 Four scripts are provided as standard with this coursework, two are more important for you than the others, and we provide them for my convenience when testing. 
 
@@ -51,7 +52,7 @@ The `run.sh` script which can be (and should be) used to run your implementation
 To get just the plan in a separate file, you can use `run.sh` like this
 
 ```bash
-<your-javaff-repo-location>/run.sh <your-domain-location> <name-of-output-file>
+<your-javaff-repo-location>/run.sh <your-domain-location> <your-problem-location> <name-of-output-file>
 ```
 
 for example **if I'm in my JavaFF folder** with a terminal already open I can run
@@ -59,6 +60,7 @@ for example **if I'm in my JavaFF folder** with a terminal already open I can ru
 ```bash
 ./run.sh ./pddl/depots/domain.pddl ./pddl/depots/instances/instance-1.pddl
 ```
+(This will run the first instance of the depots domain).
 
 If I also want to save my plan to a file I could write
 
