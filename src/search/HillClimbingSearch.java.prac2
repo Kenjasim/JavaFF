@@ -30,7 +30,7 @@ package javaff.search;
 
 import javaff.planning.State;
 import javaff.planning.Filter;
-import javaff.search.SuccessorSelector;
+import javaff.search.SucessorSelector;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.SortedSet;
@@ -49,7 +49,7 @@ public class HillClimbingSearch extends Search
 	protected Hashtable closed;
 	protected LinkedList open;
 	protected Filter filter = null;
-	protected SuccessorSelector selector = null;
+	protected SucessorSelector selector = null;
 	protected int randValue;
 	private int maxDepth;
 	
@@ -119,32 +119,47 @@ public class HillClimbingSearch extends Search
 			
 			Iterator succItr = successors.iterator();
 
-			//Set<State> bestsucessor = new HashSet<State>();
-			Set<State> successor = new HashSet<State>();	//Empty set of sucessors
+			Set<State> bestsucessor = new HashSet<State>();	//Empty set of best sucessors
 			
 			BigDecimal bestHValue = new BigDecimal("1000000000000000");	//Set the heuristic value to be infinity	
 		
 			while (succItr.hasNext()) {
 				State succ = (State) succItr.next(); // next successor
-
 			
 				if (needToVisit(succ)) {
 					if (succ.goalReached()) { // if we've found a goal state - return it as the solution
 						return succ;
-					} else
-					{
-						successor.add(succ); // add all sucessors to this
+					} else if (succ.getHValue().compareTo(bestHValue) < 0) {
+						// if we've found a state with a better heuristic value than the best seen so far
+					
+						bestHValue = succ.getHValue(); // note the new best avlue
+						javaff.JavaFF.infoOutput.println(bestHValue);
+						open = new LinkedList(); // clear the open list
+						open.add(succ);  // put this on it
+						bestsucessor.add(succ); //add to best successor 
+					}else if (succ.getHValue() == bestHValue) {
+						bestsucessor.add(succ); //add to best successor 
+						open = new LinkedList(); // clear the open list
 						open.add(succ);  //add to the open list
 					} 
 				}
 			}
-			if (successor.isEmpty())
+			if (bestsucessor.isEmpty())
 			{
 				s = null;
 			}else
 			{
-				State succsel = selector.choose(successor);
-				return succsel;
+				Iterator itr = bestsucessor.iterator();
+				int i = 0;
+				while(itr.hasNext())
+				{
+					if (i == randValue)
+					{
+						return((State) itr.next());
+					}
+				}
+				return null;
+				
 			}
 			depth += 1;
 			if (depth == maxDepth)

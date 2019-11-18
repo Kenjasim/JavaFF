@@ -46,6 +46,7 @@ import javaff.search.Search;
 import javaff.search.BestFirstSearch;
 import javaff.search.EnforcedHillClimbingSearch;
 import javaff.search.HillClimbingSearch;
+import javaff.search.BestSuccessorSelector;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -220,6 +221,7 @@ public class JavaFF
 
 	// Now, initialise an EHC searcher
 	HillClimbingSearch HCS = new HillClimbingSearch(initialState, r);
+	HCS.setSelector(BestSuccessorSelector.getInstance());
 	State goalState = null;
 	for (int depthBound = 5; depthBound < 100; ++depthBound) 
 	{
@@ -240,6 +242,7 @@ public class JavaFF
 	// Try and find a plan using EHC
   	State goalState2 = null;
 	HillClimbingSearch HCS2 = new HillClimbingSearch(initialState, r);
+	HCS2.setSelector(BestSuccessorSelector.getInstance());
 	for (int depthBound = 5; depthBound < 100; ++depthBound) 
 	{
 		HCS2.setMaxDepth(depthBound);
