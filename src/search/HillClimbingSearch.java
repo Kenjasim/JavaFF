@@ -117,35 +117,20 @@ public class HillClimbingSearch extends Search
 			
 			Set successors = s.getNextStates(filter.getActions(s)); // and find its neighbourhood
 			
-			Iterator succItr = successors.iterator();
-
-			//Set<State> bestsucessor = new HashSet<State>();
-			Set<State> successor = new HashSet<State>();	//Empty set of sucessors
-			
-			BigDecimal bestHValue = new BigDecimal("1000000000000000");	//Set the heuristic value to be infinity	
+			Iterator succItr = successors.iterator();	
 		
 			while (succItr.hasNext()) {
 				State succ = (State) succItr.next(); // next successor
-
-			
 				if (needToVisit(succ)) {
-					if (succ.goalReached()) { // if we've found a goal state - return it as the solution
+					if (succ.goalReached()) {
+						System.out.println("Found Goal"); // if we've found a goal state - return it as the solution
 						return succ;
-					} else
-					{
-						successor.add(succ); // add all sucessors to this
-						open.add(succ);  //add to the open list
-					} 
+					}
 				}
 			}
-			if (successor.isEmpty())
-			{
-				s = null;
-			}else
-			{
-				State succsel = selector.choose(successor);
-				return succsel;
-			}
+			open = new LinkedList();
+			State succsel = selector.choose(successors);
+			open.add(succsel);
 			depth += 1;
 			if (depth == maxDepth)
 			{

@@ -40,6 +40,7 @@ import javaff.planning.TemporalMetricState;
 import javaff.planning.RelaxedTemporalMetricPlanningGraph;
 import javaff.planning.HelpfulFilter;
 import javaff.planning.NullFilter;
+import javaff.planning.RandomThreeFilter;
 import javaff.scheduling.Scheduler;
 import javaff.scheduling.JavaFFScheduler;
 import javaff.search.Search;
@@ -47,6 +48,7 @@ import javaff.search.BestFirstSearch;
 import javaff.search.EnforcedHillClimbingSearch;
 import javaff.search.HillClimbingSearch;
 import javaff.search.BestSuccessorSelector;
+import javaff.search.RouletteSelector;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -221,12 +223,12 @@ public class JavaFF
 
 	// Now, initialise an EHC searcher
 	HillClimbingSearch HCS = new HillClimbingSearch(initialState, r);
-	HCS.setSelector(BestSuccessorSelector.getInstance());
+	HCS.setSelector(RouletteSelector.getInstance());
 	State goalState = null;
 	for (int depthBound = 5; depthBound < 100; ++depthBound) 
 	{
 		HCS.setMaxDepth(depthBound);
-		HCS.setFilter(HelpfulFilter.getInstance()); // and use the helpful actions neighbourhood
+		HCS.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
 		goalState = HCS.search();
 		if (goalState != null)
@@ -242,11 +244,11 @@ public class JavaFF
 	// Try and find a plan using EHC
   	State goalState2 = null;
 	HillClimbingSearch HCS2 = new HillClimbingSearch(initialState, r);
-	HCS2.setSelector(BestSuccessorSelector.getInstance());
+	HCS2.setSelector(RouletteSelector.getInstance());
 	for (int depthBound = 5; depthBound < 100; ++depthBound) 
 	{
 		HCS2.setMaxDepth(depthBound);
-		HCS2.setFilter(HelpfulFilter.getInstance()); // and use the helpful actions neighbourhood
+		HCS2.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
 		goalState2 = HCS2.search();
 		if (goalState2 != null)
