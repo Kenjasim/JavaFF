@@ -222,13 +222,13 @@ public class JavaFF
 	infoOutput.println("Performing search as in FF - first considering EHC with only helpful actions");
 
 	// Now, initialise an EHC searcher
-	HillClimbingSearch HCS = new HillClimbingSearch(initialState, r);
-	HCS.setSelector(RouletteSelector.getInstance());
 	State goalState = null;
 	for (int depthBound = 5; depthBound < 100; ++depthBound) 
 	{
+		HillClimbingSearch HCS = new HillClimbingSearch(initialState);
+		HCS.setSelector(BestSuccessorSelector.getInstance());
 		HCS.setMaxDepth(depthBound);
-		HCS.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
+		HCS.setFilter(HelpfulFilter.getInstance()); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
 		goalState = HCS.search();
 		if (goalState != null)
@@ -241,14 +241,14 @@ public class JavaFF
   {
     infoOutput.println("EHC will HelpfulFilter failed, using EHC with NullFilter, with all actions");
 
+	State goalState2 = null;
 	// Try and find a plan using EHC
-  	State goalState2 = null;
-	HillClimbingSearch HCS2 = new HillClimbingSearch(initialState, r);
-	HCS2.setSelector(RouletteSelector.getInstance());
 	for (int depthBound = 5; depthBound < 100; ++depthBound) 
 	{
+		HillClimbingSearch HCS2 = new HillClimbingSearch(initialState);
+		HCS2.setSelector(BestSuccessorSelector.getInstance());
 		HCS2.setMaxDepth(depthBound);
-		HCS2.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
+		HCS2.setFilter(HelpfulFilter.getInstance()); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
 		goalState2 = HCS2.search();
 		if (goalState2 != null)

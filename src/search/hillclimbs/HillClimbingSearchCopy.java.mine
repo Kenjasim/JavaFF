@@ -53,9 +53,10 @@ public class HillClimbingSearch extends Search
 	protected int randValue;
 	private int maxDepth;
 	
-	public HillClimbingSearch(State s)
+	public HillClimbingSearch(State s, int randValue)
 	{
 		this(s, new HValueComparator());
+		this.randValue = randValue;
 	}
 
 	public HillClimbingSearch(State s, Comparator c)
