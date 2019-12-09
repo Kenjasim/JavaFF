@@ -201,6 +201,7 @@ public class AStarSearch extends Search
             }
 
         }
+        System.out.println("Failed: " + open.size());
         return null;
     }
     }
