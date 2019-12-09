@@ -219,16 +219,16 @@ public class JavaFF
 
 	// Implementation of standard FF-style search
 
-	infoOutput.println("Performing search as in FF - first considering EHC with only helpful actions");
+	infoOutput.println("--------------Hill Climb With Roulette-------------------------");
 
 	// Now, initialise an EHC searcher
 	State goalState = null;
 	for (int depthBound = 5; depthBound < 100; ++depthBound) 
 	{
 		HillClimbingSearch HCS = new HillClimbingSearch(initialState);
-		HCS.setSelector(BestSuccessorSelector.getInstance());
+		HCS.setSelector(RouletteSelector.getInstance());
 		HCS.setMaxDepth(depthBound);
-		HCS.setFilter(HelpfulFilter.getInstance()); // and use the helpful actions neighbourhood
+		HCS.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
 		goalState = HCS.search();
 		if (goalState != null)
@@ -239,7 +239,7 @@ public class JavaFF
 
   if (goalState == null) //if no plan
   {
-    infoOutput.println("EHC will HelpfulFilter failed, using EHC with NullFilter, with all actions");
+    infoOutput.println("--------------Hill Climb With Best-------------------------");
 
 	State goalState2 = null;
 	// Try and find a plan using EHC
@@ -258,7 +258,7 @@ public class JavaFF
 	}
 	if (goalState2 == null) // if we can't find one
 	{
-		infoOutput.println("EHC failed, using best-first search, with all actions");
+		infoOutput.println("--------------Best First Search-------------------------");
 
 		// create a Best-First Searcher
 		BestFirstSearch BFS = new BestFirstSearch(initialState);

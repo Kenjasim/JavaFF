@@ -38,24 +38,25 @@ public class RouletteSelector implements SuccessorSelector
 
 		while (itr.hasNext())
 		{
-			curr = (State) itr.next();
+			State curr = (State) itr.next();
 			fitness.put((double) 1/curr.getHValue().doubleValue(), curr); 
 			sum = sum + (double) 1/curr.getHValue().doubleValue();
 		}
 		double random = javaff.JavaFF.generator.nextDouble() * sum;
 		Iterator skipThrough = fitness.keySet().iterator();
 		double sumInner = 0;
+		State bestState = null;
 		while (skipThrough.hasNext())
 		{ 
 			double fitnessVal = (double) skipThrough.next();
 			if (random >= sumInner && random <= (sumInner + fitnessVal))
 			{
 				State state = (State) fitness.get(fitnessVal);
-				return state;
+				bestState = state;
 			}
 			sumInner = fitnessVal + sumInner;
 		}
-		return null; // return tmstate from set
+		return bestState; // return tmstate from set
 
 	};
 
