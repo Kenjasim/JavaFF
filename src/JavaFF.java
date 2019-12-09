@@ -50,6 +50,8 @@ import javaff.search.HillClimbingSearch;
 import javaff.search.BestSuccessorSelector;
 import javaff.search.TwoRandomSuccessorSelector;
 import javaff.search.RouletteSelector;
+import javaff.search.LRTAStarSearch;
+import javaff.search.AStarSearch;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -221,13 +223,39 @@ public class JavaFF
 	// Implementation of standard FF-style search
 
 	infoOutput.println("----------------------------Preforming Optimising Task--------------------------");
+	infoOutput.println("----------------------------Running LRTA* Search--------------------------");
+	TotalOrderPlan bestPlan = null;
+	State bestState = null;
+	double planCost = 10000;
+	double bestCost = 10000;
+	LRTAStarSearch LRTA = new LRTAStarSearch(initialState);
+	LRTA.setFilter(HelpfulFilter.getInstance());
+	State LRTAGoal = LRTA.search();
+	if (LRTAGoal != null)
+	{
+		bestState=LRTAGoal;
+		bestPlan = (TotalOrderPlan) bestState.getSolution();
+		bestCost = bestPlan.getCost();
+	}
+	infoOutput.println("----------------------------Running A* Search--------------------------");
+	AStarSearch ASS = new AStarSearch(initialState);
+	ASS.setFilter(HelpfulFilter.getInstance());
+	State ASSGoal = ASS.search();
+	if (ASSGoal != null)
+	{
+		TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
+		double length = tplan.getCost();
+		if(length < bestCost)
+		{
+			bestState=ASSGoal;
+			bestPlan = (TotalOrderPlan) bestState.getSolution();
+			bestCost = bestPlan.getCost();
+		}
+	}
+	infoOutput.println("----------------------------Running Phased Succsessor Selector Search--------------------------");
 
 	// Now, initialise an EHC searcher
 	State goalState = null;
-	State bestState = null;
-	TotalOrderPlan bestplan = null;
-	double planCost = 10000;
-	double bestCost = 10000;
 	for (int i=1;i<=300;i++)
 	{
 		System.out.println("Plan: " + i );
@@ -241,19 +269,19 @@ public class JavaFF
 		{
 			TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
 			planCost = newPlan.getCost();
-			if (bestplan != null)
+			if (bestPlan != null)
 			{
 				System.out.println("Plan Length: " + bestCost);
 				System.out.println("---------------------------------------------------------------------------");
 				if(bestCost > planCost)
 				{
-					bestplan = newPlan;
+					bestPlan = newPlan;
 					bestCost = newPlan.getCost();
 					bestState = goalState;
 				}
 			}else
 			{
-				bestplan = newPlan;
+				bestPlan = newPlan;
 				bestCost = newPlan.getCost();
 				bestState = goalState;
 			}
@@ -274,13 +302,13 @@ public class JavaFF
 		{
 			TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
 			planCost = newPlan.getCost();
-			if (bestplan != null)
+			if (bestPlan != null)
 			{
 				System.out.println("Plan Length: " + planCost);
 				System.out.println("---------------------------------------------------------------------------");
 				if(bestCost > planCost)
 				{
-					bestplan = newPlan;
+					bestPlan = newPlan;
 					bestCost = newPlan.getCost();
 					bestState = goalState;
 				}
