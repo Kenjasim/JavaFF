@@ -105,13 +105,10 @@ public class LRTAStarSearch extends Search
 
         while (!open.isEmpty()) // whilst still states to consider
 		{
-            System.out.println("Open List Size: " + open.size());
             LRTAStarState lrtastrcurrent = removeNext();//get the next state on the open list
             State current = lrtastrcurrent.getState();
             if (needToVisit(current))
             {
-                System.out.println("Plan Cost: " + current.getGValue().doubleValue());
-                System.out.println("-------------------------------------------------");
 
                 if (current.goalReached()) { // check if the current is the goal state
                     System.out.println("Found Goal");

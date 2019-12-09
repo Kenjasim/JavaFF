@@ -168,13 +168,10 @@ public class AStarSearch extends Search
 		
 		needToVisit(start, start_f_value);
 
-        while (!open.isEmpty()) // whilst still states to consider
+        while (!open.isEmpty() && open.size() < 50000) // whilst still states to consider
 		{
-            System.out.println("Open List Size: " + open.size());
             AStarState astrcurrent = open.poll();//get the state with the best a* value
             State current = astrcurrent.getState();
-            System.out.println("Plan Cost: " + current.getGValue().doubleValue());
-            System.out.println("-------------------------------------------------");
             if (current.goalReached()) { // check if the current is the goal state
                 System.out.println("Found Goal");
                 return current;

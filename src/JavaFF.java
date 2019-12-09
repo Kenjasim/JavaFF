@@ -236,6 +236,9 @@ public class JavaFF
 		bestState=LRTAGoal;
 		bestPlan = (TotalOrderPlan) bestState.getSolution();
 		bestCost = bestPlan.getCost();
+		System.out.println("LRTA* Plan");
+		System.out.println("Plan Length: " + bestCost);
+		System.out.println("---------------------------------------------------------------------------");
 	}
 	infoOutput.println("----------------------------Running A* Search--------------------------");
 	AStarSearch ASS = new AStarSearch(initialState);
@@ -247,9 +250,12 @@ public class JavaFF
 		double length = tplan.getCost();
 		if(length < bestCost)
 		{
-			bestState=ASSGoal;
+			bestState = ASSGoal;
 			bestPlan = (TotalOrderPlan) bestState.getSolution();
 			bestCost = bestPlan.getCost();
+			System.out.println("A* Plan");
+			System.out.println("Plan Length: " + bestCost);
+			System.out.println("---------------------------------------------------------------------------");
 		}
 	}
 	infoOutput.println("----------------------------Running Phased Succsessor Selector Search--------------------------");
@@ -279,11 +285,6 @@ public class JavaFF
 					bestCost = newPlan.getCost();
 					bestState = goalState;
 				}
-			}else
-			{
-				bestPlan = newPlan;
-				bestCost = newPlan.getCost();
-				bestState = goalState;
 			}
 		}
 
@@ -317,7 +318,7 @@ public class JavaFF
 
 	}
 
-	if (goalState != null)
+	if (bestState != null)
 	{
 		return bestState;
 	}else  //if no plan
