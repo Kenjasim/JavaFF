@@ -33,10 +33,7 @@ public class RouletteSelector implements SuccessorSelector
 			return null;
 
 		HashMap fitness = new HashMap();// states
-		BigDecimal fitnessValue; // best heuristic seen
 		Iterator itr = toChooseFrom.iterator();
-		State curr = (State) itr.next();// first successor is the best seen so far
-		fitness.put((double)1/curr.getHValue().doubleValue(), curr); 
 		double sum = 0;
 
 		while (itr.hasNext())
