@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.math.BigDecimal;
+import java.util.Random;
 
 public class RouletteSelector implements SuccessorSelector
 {
@@ -35,10 +36,9 @@ public class RouletteSelector implements SuccessorSelector
 		HashMap fitness = new HashMap();// states
 		Iterator itr = toChooseFrom.iterator();
 		double sum = 0;
-
 		while (itr.hasNext())
 		{
-			curr = (State) itr.next();
+			State curr = (State) itr.next();
 			fitness.put((double) 1/curr.getHValue().doubleValue(), curr); 
 			sum = sum + (double) 1/curr.getHValue().doubleValue();
 		}

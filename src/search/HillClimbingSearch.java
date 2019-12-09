@@ -52,10 +52,12 @@ public class HillClimbingSearch extends Search
 	protected SuccessorSelector selector = null;
 	protected int randValue;
 	private int maxDepth;
+	private double maxLength;
 	
-	public HillClimbingSearch(State s)
+	public HillClimbingSearch(State s, double maxLength)
 	{
 		this(s, new HValueComparator());
+		this.maxLength = maxLength;
 	}
 
 	public HillClimbingSearch(State s, Comparator c)
@@ -113,6 +115,12 @@ public class HillClimbingSearch extends Search
 		while (!open.isEmpty()) // whilst still states to consider
 		{	
 			State s = removeNext(); // get the next one
+
+			if (s.getGValue().doubleValue() > maxLength){
+				System.out.println("Worse Plan Found With Cost: " + s.getGValue().doubleValue());
+				System.out.println("---------------------------------------------------------------------------");
+				return null;
+			}
 			
 			Set successors = s.getNextStates(filter.getActions(s)); // and find its neighbourhood
 			

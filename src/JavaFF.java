@@ -48,6 +48,7 @@ import javaff.search.BestFirstSearch;
 import javaff.search.EnforcedHillClimbingSearch;
 import javaff.search.HillClimbingSearch;
 import javaff.search.BestSuccessorSelector;
+import javaff.search.TwoRandomSuccessorSelector;
 import javaff.search.RouletteSelector;
 
 import java.io.PrintStream;
@@ -219,45 +220,80 @@ public class JavaFF
 
 	// Implementation of standard FF-style search
 
-	infoOutput.println("Performing search as in FF - first considering EHC with only helpful actions");
+	infoOutput.println("----------------------------Preforming Optimising Task--------------------------");
 
 	// Now, initialise an EHC searcher
 	State goalState = null;
-	for (int depthBound = 5; depthBound < 100; ++depthBound) 
+	State bestState = null;
+	TotalOrderPlan bestplan = null;
+	double planCost = 10000;
+	double bestCost = 10000;
+	for (int i=1;i<=300;i++)
 	{
-		HillClimbingSearch HCS = new HillClimbingSearch(initialState);
+		System.out.println("Plan: " + i );
+		HillClimbingSearch HCS = new HillClimbingSearch(initialState, bestCost);
 		HCS.setSelector(BestSuccessorSelector.getInstance());
-		HCS.setMaxDepth(depthBound);
-		HCS.setFilter(HelpfulFilter.getInstance()); // and use the helpful actions neighbourhood
+		HCS.setMaxDepth(100);
+		HCS.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
 		goalState = HCS.search();
 		if (goalState != null)
 		{
-			return goalState;
+			TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
+			planCost = newPlan.getCost();
+			if (bestplan != null)
+			{
+				System.out.println("Plan Length: " + bestCost);
+				System.out.println("---------------------------------------------------------------------------");
+				if(bestCost > planCost)
+				{
+					bestplan = newPlan;
+					bestCost = newPlan.getCost();
+					bestState = goalState;
+				}
+			}else
+			{
+				bestplan = newPlan;
+				bestCost = newPlan.getCost();
+				bestState = goalState;
+			}
 		}
+
 	}
-
-  if (goalState == null) //if no plan
-  {
-    infoOutput.println("EHC will HelpfulFilter failed, using EHC with NullFilter, with all actions");
-
-	State goalState2 = null;
-	// Try and find a plan using EHC
-	for (int depthBound = 5; depthBound < 100; ++depthBound) 
+	infoOutput.println("----------------------------Performing Random 2 Search--------------------------");
+	for (int i=1;i<=200;i++)
 	{
-		HillClimbingSearch HCS2 = new HillClimbingSearch(initialState);
-		HCS2.setSelector(BestSuccessorSelector.getInstance());
-		HCS2.setMaxDepth(depthBound);
-		HCS2.setFilter(HelpfulFilter.getInstance()); // and use the helpful actions neighbourhood
+		System.out.println("Plan: " + i);
+		HillClimbingSearch HCS = new HillClimbingSearch(initialState, planCost);
+		HCS.setSelector(TwoRandomSuccessorSelector.getInstance());
+		HCS.setMaxDepth(100);
+		HCS.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
-		goalState2 = HCS2.search();
-		if (goalState2 != null)
+		goalState = HCS.search();
+		if (goalState != null)
 		{
-			return goalState2;
+			TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
+			planCost = newPlan.getCost();
+			if (bestplan != null)
+			{
+				System.out.println("Plan Length: " + planCost);
+				System.out.println("---------------------------------------------------------------------------");
+				if(bestCost > planCost)
+				{
+					bestplan = newPlan;
+					bestCost = newPlan.getCost();
+					bestState = goalState;
+				}
+			}
 		}
+
 	}
-	if (goalState2 == null) // if we can't find one
+
+	if (goalState != null)
 	{
+		return bestState;
+	}else  //if no plan
+  	{
 		infoOutput.println("EHC failed, using best-first search, with all actions");
 
 		// create a Best-First Searcher
@@ -271,9 +307,6 @@ public class JavaFF
 		goalState = BFS.search();
 		return goalState; // return the plan
 	}
-	return goalState2; // return the plan
-  }
-	return goalState; // return the plan
 
   
 }
