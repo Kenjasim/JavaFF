@@ -240,24 +240,24 @@ public class JavaFF
 		System.out.println("Plan Length: " + bestCost);
 		System.out.println("---------------------------------------------------------------------------");
 	}
-	infoOutput.println("----------------------------Running A* Search--------------------------");
-	AStarSearch ASS = new AStarSearch(initialState);
-	ASS.setFilter(HelpfulFilter.getInstance());
-	State ASSGoal = ASS.search();
-	if (ASSGoal != null)
-	{
-		TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
-		double length = tplan.getCost();
-		if(length < bestCost)
-		{
-			bestState = ASSGoal;
-			bestPlan = (TotalOrderPlan) bestState.getSolution();
-			bestCost = bestPlan.getCost();
-			System.out.println("A* Plan");
-			System.out.println("Plan Length: " + bestCost);
-			System.out.println("---------------------------------------------------------------------------");
-		}
-	}
+	// infoOutput.println("----------------------------Running A* Search--------------------------");
+	// AStarSearch ASS = new AStarSearch(initialState);
+	// ASS.setFilter(HelpfulFilter.getInstance());
+	// State ASSGoal = ASS.search();
+	// if (ASSGoal != null)
+	// {
+	// 	TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
+	// 	double length = tplan.getCost();
+	// 	if(length < bestCost)
+	// 	{
+	// 		bestState = ASSGoal;
+	// 		bestPlan = (TotalOrderPlan) bestState.getSolution();
+	// 		bestCost = bestPlan.getCost();
+	// 		System.out.println("A* Plan");
+	// 		System.out.println("Plan Length: " + bestCost);
+	// 		System.out.println("---------------------------------------------------------------------------");
+	// 	}
+	// }
 	infoOutput.println("----------------------------Running Phased Succsessor Selector Search--------------------------");
 
 	// Now, initialise an EHC searcher

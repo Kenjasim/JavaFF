@@ -69,10 +69,8 @@ public class RandomThreeFilter implements Filter
 
 	public Set getActions(State S) 
 	{
-		Set helpfulFiltered = hf.getActions(S);
-		Set subset = new HashSet();
 		Set helpfulActions = hf.getActions(S);
-		subset = randomThree(helpfulActions);
+		Set subset = randomThree(helpfulActions);
 		return subset;
 	}
 

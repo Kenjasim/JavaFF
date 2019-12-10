@@ -39,8 +39,9 @@ public class RouletteSelector implements SuccessorSelector
 		while (itr.hasNext())
 		{
 			State curr = (State) itr.next();
-			fitness.put((double) 1/curr.getHValue().doubleValue(), curr); 
-			sum = sum + (double) 1/curr.getHValue().doubleValue();
+			double i = 1/(curr.getHValue().doubleValue());
+			fitness.put(curr, i); 
+			sum = sum + i;
 		}
 		double random = javaff.JavaFF.generator.nextDouble() * sum;
 		Iterator skipThrough = fitness.keySet().iterator();
@@ -48,10 +49,10 @@ public class RouletteSelector implements SuccessorSelector
 		State bestState = null;
 		while (skipThrough.hasNext())
 		{ 
-			double fitnessVal = (double) skipThrough.next();
+			State state = (State) skipThrough.next();
+			double fitnessVal = (double) fitness.get(state);
 			if (random >= sumInner && random <= (sumInner + fitnessVal))
 			{
-				State state = (State) fitness.get(fitnessVal);
 				bestState = state;
 			}
 			sumInner = fitnessVal + sumInner;
