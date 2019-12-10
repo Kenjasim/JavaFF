@@ -168,7 +168,7 @@ public class AStarSearch extends Search
 		
 		needToVisit(start, start_f_value);
 
-        while (!open.isEmpty() && open.size() < 50000) // whilst still states to consider
+        while (!open.isEmpty() && open.size() < 10000) // whilst still states to consider
 		{
             AStarState astrcurrent = open.poll();//get the state with the best a* value
             State current = astrcurrent.getState();

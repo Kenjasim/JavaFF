@@ -13,6 +13,9 @@ import java.util.Set;
 import java.util.HashSet;
 import java.math.BigDecimal;
 import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class TwoRandomSuccessorSelector implements SuccessorSelector
 {
@@ -26,6 +29,19 @@ public class TwoRandomSuccessorSelector implements SuccessorSelector
 		return ss;
 	}
 
+	public static Set randomTwo(Set st) {
+		List<State> copy = new ArrayList<State>(st);
+		Collections.shuffle(copy);
+		try{
+			copy = copy.subList(0, 2);
+		}catch(Exception e)
+		{
+			copy = copy;
+		}
+		Set<State> new_set = new HashSet<State>(copy);
+		return new_set;
+	}
+
 	public State choose(Set toChooseFrom)
 	{
 
@@ -33,22 +49,7 @@ public class TwoRandomSuccessorSelector implements SuccessorSelector
 			return null;
 
 		//Randomly Select Two States
-		HashSet subset = new HashSet();
-		int size = toChooseFrom.size();
-		int j = 0;
-		int i = 0;
-		while (j != 2)
-		{
-			int item = new Random().nextInt(size);
-			for(Object obj : toChooseFrom)
-			{
-				if (i == item)
-					subset.add((State)obj);
-				i++;
-			}
-			j++;
-		}
-
+		Set subset = randomTwo(toChooseFrom);
 		//Compare the States
 		double h_value = 1000000000;
 		State bestState = null;
