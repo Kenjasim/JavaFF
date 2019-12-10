@@ -34,6 +34,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class RandomThreeFilter implements Filter
 {
@@ -51,25 +54,23 @@ public class RandomThreeFilter implements Filter
 		return rf;
 	}
 
+	public static Set randomThree(Set st) {
+		List<Action> copy = new ArrayList<Action>(st);
+		Collections.shuffle(copy);
+		try{
+			copy = copy.subList(0, 3);
+		}catch(Exception e)
+		{
+			copy = copy;
+		}
+		Set<Action> new_set = new HashSet<Action>(copy);
+		return new_set;
+	}
+
 	public Set getActions(State S) 
 	{
-		Set helpfulFiltered = hf.getActions(S);
-		Set subset = new HashSet();
 		Set helpfulActions = hf.getActions(S);
-		int size = helpfulFiltered.size();
-		int j = 0;
-		int i = 0;
-		while (j != 3)
-		{
-			int item = new Random().nextInt(size);
-			for(Object obj : helpfulFiltered)
-			{
-				if (i == item)
-					subset.add((Action)obj);
-				i++;
-			}
-			j++;
-		}
+		Set subset = randomThree(helpfulActions);
 		return subset;
 	}
 
