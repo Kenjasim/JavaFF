@@ -226,38 +226,57 @@ public class JavaFF
 	infoOutput.println("----------------------------Running LRTA* Search--------------------------");
 	TotalOrderPlan bestPlan = null;
 	State bestState = null;
-	double planCost = 10000;
 	double bestCost = 10000;
-	LRTAStarSearch LRTA = new LRTAStarSearch(initialState);
-	LRTA.setFilter(HelpfulFilter.getInstance());
-	State LRTAGoal = LRTA.search();
-	if (LRTAGoal != null)
+	for (int i=1;i<=300;i++)
 	{
-		bestState=LRTAGoal;
-		bestPlan = (TotalOrderPlan) bestState.getSolution();
-		bestCost = bestPlan.getCost();
-		System.out.println("LRTA* Plan");
-		System.out.println("Plan Length: " + bestCost);
-		System.out.println("---------------------------------------------------------------------------");
+		System.out.println("Plan: " + i );
+		LRTAStarSearch LRTA = new LRTAStarSearch(initialState);
+		LRTA.setFilter(RandomThreeFilter.getInstance());
+		State LRTAGoal = LRTA.search();
+		if (LRTAGoal != null)
+		{
+			if (bestState != null)
+			{
+				TotalOrderPlan tplan = (TotalOrderPlan) bestState.getSolution();
+				double length = tplan.getCost();
+				System.out.println("LRTA* Plan");
+				System.out.println("Plan Length: " + length);
+				System.out.println("---------------------------------------------------------------------------");
+				if(length < bestCost)
+				{
+					bestState=LRTAGoal;
+					bestPlan = (TotalOrderPlan) bestState.getSolution();
+					bestCost = bestPlan.getCost();
+				}
+			}else
+			{
+				bestState=LRTAGoal;
+				bestPlan = (TotalOrderPlan) bestState.getSolution();
+				bestCost = bestPlan.getCost();
+				System.out.println("LRTA* Plan");
+				System.out.println("Plan Length: " + bestCost);
+				System.out.println("---------------------------------------------------------------------------");
+			}
+		}
 	}
-	// infoOutput.println("----------------------------Running A* Search--------------------------");
-	// AStarSearch ASS = new AStarSearch(initialState);
-	// ASS.setFilter(HelpfulFilter.getInstance());
-	// State ASSGoal = ASS.search();
-	// if (ASSGoal != null)
-	// {
-	// 	TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
-	// 	double length = tplan.getCost();
-	// 	if(length < bestCost)
-	// 	{
-	// 		bestState = ASSGoal;
-	// 		bestPlan = (TotalOrderPlan) bestState.getSolution();
-	// 		bestCost = bestPlan.getCost();
-	// 		System.out.println("A* Plan");
-	// 		System.out.println("Plan Length: " + bestCost);
-	// 		System.out.println("---------------------------------------------------------------------------");
-	// 	}
-	// }
+	infoOutput.println("----------------------------Running A* Search--------------------------");
+	AStarSearch ASS = new AStarSearch(initialState);
+	ASS.setFilter(HelpfulFilter.getInstance());
+	State ASSGoal = ASS.search();
+	if (ASSGoal != null)
+	{
+		TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
+		double length = tplan.getCost();
+		if(length < bestCost)
+		{
+			bestState = ASSGoal;
+			bestPlan = (TotalOrderPlan) bestState.getSolution();
+			bestCost = bestPlan.getCost();
+			System.out.println("A* Plan");
+			System.out.println("Plan Length: " + bestCost);
+			System.out.println("---------------------------------------------------------------------------");
+		}
+	}
 	infoOutput.println("----------------------------Running Phased Succsessor Selector Search--------------------------");
 
 	// Now, initialise an EHC searcher
@@ -274,7 +293,7 @@ public class JavaFF
 		if (goalState != null)
 		{
 			TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
-			planCost = newPlan.getCost();
+			double planCost = newPlan.getCost();
 			if (bestPlan != null)
 			{
 				System.out.println("Plan Length: " + bestCost);
@@ -293,7 +312,7 @@ public class JavaFF
 	for (int i=1;i<=200;i++)
 	{
 		System.out.println("Plan: " + i);
-		HillClimbingSearch HCS = new HillClimbingSearch(initialState, planCost);
+		HillClimbingSearch HCS = new HillClimbingSearch(initialState, bestCost);
 		HCS.setSelector(TwoRandomSuccessorSelector.getInstance());
 		HCS.setMaxDepth(100);
 		HCS.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
@@ -302,7 +321,7 @@ public class JavaFF
 		if (goalState != null)
 		{
 			TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
-			planCost = newPlan.getCost();
+			double planCost = newPlan.getCost();
 			if (bestPlan != null)
 			{
 				System.out.println("Plan Length: " + planCost);
