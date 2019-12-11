@@ -42,23 +42,25 @@ public class RandomThreeFilter implements Filter
 {
 	private static RandomThreeFilter rf = null;
 	protected HelpfulFilter hf;
+	static int k = 3;
 
 	private RandomThreeFilter()
 	{
 		hf = HelpfulFilter.getInstance();
 	}
 
-	public static RandomThreeFilter getInstance()
+	public static RandomThreeFilter getInstance(int j)
 	{
 		if (rf == null) rf = new RandomThreeFilter(); // Singleton design pattern - return one central instance
+		k = j;
 		return rf;
 	}
 
-	public static Set randomThree(Set st) {
+	public static Set randomK(Set st) {
 		List<Action> copy = new ArrayList<Action>(st);
 		Collections.shuffle(copy);
 		try{
-			copy = copy.subList(0, 3);
+			copy = copy.subList(0, k);
 		}catch(Exception e)
 		{
 			copy = copy;
@@ -70,7 +72,7 @@ public class RandomThreeFilter implements Filter
 	public Set getActions(State S) 
 	{
 		Set helpfulActions = hf.getActions(S);
-		Set subset = randomThree(helpfulActions);
+		Set subset = randomK(helpfulActions);
 		return subset;
 	}
 

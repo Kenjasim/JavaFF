@@ -228,7 +228,7 @@ public class JavaFF
 		HillClimbingSearch HCS = new HillClimbingSearch(initialState);
 		HCS.setSelector(RouletteSelector.getInstance());
 		HCS.setMaxDepth(depthBound);
-		HCS.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
+		HCS.setFilter(RandomThreeFilter.getInstance(3)); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
 		goalState = HCS.search();
 		if (goalState != null)
