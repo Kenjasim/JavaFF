@@ -103,7 +103,7 @@ public class JavaFF
 
 			Plan plan = plan(domainFile,problemFile);
 
-			if (solutionFile != null && plan != null) writePlanToFile(plan, solutionFile);
+			// if (solutionFile != null && plan != null) writePlanToFile(plan, solutionFile);
 
 		}
 	}
@@ -114,8 +114,7 @@ public class JavaFF
 		// ********************************
 		// Parse and Ground the Problem
 		// ********************************
-		long startTime = System.currentTimeMillis();
-
+    	long startTime = System.currentTimeMillis();
 		UngroundProblem unground = PDDL21parser.parseFiles(dFile, pFile);
 
 		if (unground == null)
@@ -146,124 +145,138 @@ public class JavaFF
 		double bestCost = 10000;
 		for (int i=1;i<=300;i++)
 		{
-			if(System.currentTimeMillis() - startTime < 540000)
-			{
-				System.out.println("Plan: " + i );
-				State goalState = goalState = performLRTASearch(initialState);
-				if (goalState != null)
-					{
-					TotalOrderPlan tplan = (TotalOrderPlan) goalState.getSolution();
-					double length = tplan.getCost();
-					if(length < bestCost)
-					{
-						bestState=goalState;
-						bestPlan = (TotalOrderPlan) bestState.getSolution();
-						bestCost = bestPlan.getCost();
-						infoOutput.println("Total execution time:");
-						infoOutput.println(groundingTime + planningTime);
-						infoOutput.println("Plan Cost:");
-						if (bestPlan != null) infoOutput.println(bestPlan.getCost());
-					}
-				}else if(nullCounter > nullTolerance)
+			long newStartTime = System.currentTimeMillis();
+			System.out.println("Plan: " + i );
+			State goalState = goalState = performLRTASearch(initialState);
+			if (goalState != null)
 				{
-					nullCounter = 0;
-					break;
-				}
-				else
-				{
-					nullCounter++;
-				}
-			}
-		}
-		infoOutput.println("----------------------------Running A* Search--------------------------");
-		State ASSGoal =  performAStarSearch(initialState);
-		if(System.currentTimeMillis() - startTime < 480000)
-		{
-			if (ASSGoal != null){
-				TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
+				long endTime = System.currentTimeMillis();
+				TotalOrderPlan tplan = (TotalOrderPlan) goalState.getSolution();
 				double length = tplan.getCost();
 				if(length < bestCost)
 				{
-					bestState = ASSGoal;
+					double groundingTime = (afterGrounding - startTime)/1000.00;
+					double planningTime = (endTime - newStartTime)/1000.00;
+					bestState=goalState;
 					bestPlan = (TotalOrderPlan) bestState.getSolution();
 					bestCost = bestPlan.getCost();
 					infoOutput.println("Total execution time:");
 					infoOutput.println(groundingTime + planningTime);
 					infoOutput.println("Plan Cost:");
 					if (bestPlan != null) infoOutput.println(bestPlan.getCost());
+					File file = new File("resulting1-plan.txt");
+					writePlanToFile(bestPlan, file);
 				}
+			}else if(nullCounter > nullTolerance)
+			{
+				nullCounter = 0;
+				break;
+			}
+			else
+			{
+				nullCounter++;
+			}
+			
+		}
+		infoOutput.println("----------------------------Running A* Search--------------------------");
+		long asStartTime = System.currentTimeMillis();
+		State ASSGoal =  performAStarSearch(initialState);
+		if (ASSGoal != null){
+			TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
+			double length = tplan.getCost();
+			long endTime = System.currentTimeMillis();
+			if(length < bestCost)
+			{
+				double groundingTime = (afterGrounding - startTime)/1000.00;
+				double planningTime = (endTime - asStartTime)/1000.00;
+				bestState = ASSGoal;
+				bestPlan = (TotalOrderPlan) bestState.getSolution();
+				bestCost = bestPlan.getCost();
+				infoOutput.println("Total execution time:");
+				infoOutput.println(groundingTime + planningTime);
+				infoOutput.println("Plan Cost:");
+				if (bestPlan != null) infoOutput.println(bestPlan.getCost());
+				File file = new File("resulting-plan.txt");
+				writePlanToFile(bestPlan, file);
 			}
 		}
 
 		infoOutput.println("----------------------------Running Phased Succsessor Selector Search--------------------------");
 		for (int i=1;i<=300;i++)
 		{
-			if(System.currentTimeMillis() - startTime < 540000)
+			long newStartTime = System.currentTimeMillis();
+			System.out.println("Plan: " + i );
+			State goalState = goalState = performRandomOneSearch(initialState, bestCost);
+			if(goalState != null)
 			{
-				System.out.println("Plan: " + i );
-				State goalState = goalState = performRandomOneSearch(initialState, bestCost);
-				if(goalState != null)
+				long endTime = System.currentTimeMillis();
+				TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
+				double planCost = newPlan.getCost();
+				if (bestPlan != null)
 				{
-					TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
-					double planCost = newPlan.getCost();
-					if (bestPlan != null)
+					if(bestCost > planCost)
 					{
-						if(bestCost > planCost)
-						{
-							bestPlan = newPlan;
-							bestCost = newPlan.getCost();
-							bestState = goalState;
-							infoOutput.println("Total execution time:");
-							infoOutput.println(groundingTime + planningTime);
-							infoOutput.println("Plan Cost:");
-							if (bestPlan != null) infoOutput.println(bestPlan.getCost());
-						}
-					}	
-				}else if(nullCounter > nullTolerance)
-				{
-					nullCounter = 0;
-					break;
-				}
-				else
-				{
-					nullCounter++;
-				}
+						double groundingTime = (afterGrounding - startTime)/1000.00;
+						double planningTime = (endTime - newStartTime)/1000.00;
+						bestPlan = newPlan;
+						bestCost = newPlan.getCost();
+						bestState = goalState;
+						infoOutput.println("Total execution time:");
+						infoOutput.println(groundingTime + planningTime);
+						infoOutput.println("Plan Cost:");
+						if (bestPlan != null) infoOutput.println(bestPlan.getCost());
+						File file = new File("resulting-plan.txt");
+						writePlanToFile(bestPlan, file);
+					}
+				}	
+			}else if(nullCounter > nullTolerance)
+			{
+				nullCounter = 0;
+				break;
+			}
+			else
+			{
+				nullCounter++;
 			}
 		}
 		infoOutput.println("----------------------------Performing Random 2 Search--------------------------");
 		for (int i=1;i<=300;i++)
 		{
 			System.out.println("Plan: " + i );
-			if(System.currentTimeMillis() - startTime < 540000)
+			long newStartTime = System.currentTimeMillis();
+			State goalState = goalState = performRandomTwoSearch(initialState, bestCost);
+			if(goalState != null)
 			{
-				State goalState = goalState = performRandomTwoSearch(initialState, bestCost);
-				if(goalState != null)
+				long endTime = System.currentTimeMillis();
+				TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
+				double planCost = newPlan.getCost();
+				if (bestPlan != null)
 				{
-					TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
-					double planCost = newPlan.getCost();
-					if (bestPlan != null)
+					if(bestCost > planCost)
 					{
-						if(bestCost > planCost)
-						{
-							bestPlan = newPlan;
-							bestCost = newPlan.getCost();
-							bestState = goalState;
-							infoOutput.println("Total execution time:");
-							infoOutput.println(groundingTime + planningTime);
-							infoOutput.println("Plan Cost:");
-							if (bestPlan != null) infoOutput.println(bestPlan.getCost());
-						}
-					}	
-				}else if(nullCounter > nullTolerance)
-				{
-					nullCounter = 0;
-					break;
-				}
-				else
-				{
-					nullCounter++;
-				}
+						double groundingTime = (afterGrounding - startTime)/1000.00;
+						double planningTime = (endTime - newStartTime)/1000.00;
+						bestPlan = newPlan;
+						bestCost = newPlan.getCost();
+						bestState = goalState;
+						infoOutput.println("Total execution time:");
+						infoOutput.println(groundingTime + planningTime);
+						infoOutput.println("Plan Cost:");
+						if (bestPlan != null) infoOutput.println(bestPlan.getCost());
+						File file = new File("resulting-plan.txt");
+						writePlanToFile(bestPlan, file);
+					}
+				}	
+			}else if(nullCounter > nullTolerance)
+			{
+				nullCounter = 0;
+				break;
 			}
+			else
+			{
+				nullCounter++;
+			}
+			
 		}
 
 		if(bestState == null)
