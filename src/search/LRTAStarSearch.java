@@ -169,7 +169,7 @@ public class LRTAStarSearch extends Search
 			// set current current heuristic value
 			if (s.goalReached())
 			{
-				javaff.JavaFF.infoOutput.println("Goal found at state: " + s);
+				// javaff.JavaFF.infoOutput.println("Goal found at state: " + s);
 				return s;
 			}
 			else
@@ -188,7 +188,7 @@ public class LRTAStarSearch extends Search
 						return s;
 					}
 				}
-				// javaff.JavaFF.infoOutput.println("Best FSucc: " + bestFSucc);
+				javaff.JavaFF.infoOutput.println("Best FSucc: " + bestFSucc);
 			}
 
 			// increase depth
