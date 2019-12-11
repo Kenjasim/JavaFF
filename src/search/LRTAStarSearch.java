@@ -93,16 +93,15 @@ public class LRTAStarSearch extends Search
 	public boolean needToVisit(State s) {
 		Integer Shash = new Integer(s.hashCode()); // compute hash for state
 		State D = (State) closed.get(Shash); // see if its on the closed list
-
-		if (closed.containsKey(Shash) && D.equals(s))
-		{
-			// javaff.JavaFF.infoOutput.println("Found a closed state");
-			return false;  // if it is return false
-		}
-		else if (closed.containsKey(Shash) && !D.equals(s))
-		{
-			return false;
-		}
+			if (closed.containsKey(Shash) && D.equals(s))
+			{
+				// javaff.JavaFF.infoOutput.println("Found a closed state");
+				return false;  // if it is return false
+			}
+			else if (closed.containsKey(Shash) && !D.equals(s))
+			{
+				return false;
+			}
 
 		return true; // and return true
 	}
@@ -135,6 +134,7 @@ public class LRTAStarSearch extends Search
 			// Consider open states
 			State s = (State) open.getLast(); // get the next one
 			double currentHValue = (double) hValues.getLast();
+
 			addToClosed(s); // add to closed list
 			Set successors = s.getNextStates(filter.getActions(s)); // and find its neighbourhood
 
@@ -147,7 +147,6 @@ public class LRTAStarSearch extends Search
 			while (succItr.hasNext())
 			{
 				State succ = (State) succItr.next(); // next successor
-
 				if (needToVisit(succ))
 				{
 					// calculate best F Value
@@ -175,12 +174,9 @@ public class LRTAStarSearch extends Search
 					hValues.add(Math.min(currentHValue, bestFValue));
 				}else
 				{
-					open.removeLast();
+					addToClosed((State) open.removeLast());
 					hValues.removeLast();
-					if (depth == maxDepth -1)
-					{
-						depth = depth -1;
-					}
+					depth = depth -1;
 				}
 			}
 
@@ -190,6 +186,7 @@ public class LRTAStarSearch extends Search
 			{
 				javaff.JavaFF.infoOutput.println("Max depth exceeded " + depth + "/" + maxDepth + ", restarting...");
 			}
+
 		}
 
 		return null;
