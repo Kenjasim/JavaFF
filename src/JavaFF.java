@@ -77,6 +77,7 @@ public class JavaFF
 	public static PrintStream parsingOutput = System.out;
 	public static PrintStream infoOutput = System.out;
 	public static PrintStream errorOutput = System.err;
+	public static File solutionFile;
 
 	public static void main (String args[]) {
 		EPSILON = EPSILON.setScale(2,BigDecimal.ROUND_HALF_EVEN);
@@ -90,7 +91,7 @@ public class JavaFF
 		} else {
 			File domainFile = new File(args[0]);
 			File problemFile = new File(args[1]);
-			File solutionFile = null;
+			solutionFile = null;
 			if (args.length > 2)
 			{
 				generator = new Random(Integer.parseInt(args[2]));
@@ -100,10 +101,7 @@ public class JavaFF
 			{
 				solutionFile = new File(args[3]);
 			}
-
 			Plan plan = plan(domainFile,problemFile);
-
-			// if (solutionFile != null && plan != null) writePlanToFile(plan, solutionFile);
 
 		}
 	}
@@ -164,8 +162,7 @@ public class JavaFF
 					infoOutput.println(groundingTime + planningTime);
 					infoOutput.println("Plan Cost:");
 					if (bestPlan != null) infoOutput.println(bestPlan.getCost());
-					File file = new File("resulting1-plan.txt");
-					writePlanToFile(bestPlan, file);
+					writePlanToFile(bestPlan, solutionFile); 
 				}
 			}else if(nullCounter > nullTolerance)
 			{
@@ -196,8 +193,7 @@ public class JavaFF
 				infoOutput.println(groundingTime + planningTime);
 				infoOutput.println("Plan Cost:");
 				if (bestPlan != null) infoOutput.println(bestPlan.getCost());
-				File file = new File("resulting-plan.txt");
-				writePlanToFile(bestPlan, file);
+				writePlanToFile(bestPlan, solutionFile);
 			}
 		}
 
@@ -225,8 +221,7 @@ public class JavaFF
 						infoOutput.println(groundingTime + planningTime);
 						infoOutput.println("Plan Cost:");
 						if (bestPlan != null) infoOutput.println(bestPlan.getCost());
-						File file = new File("resulting-plan.txt");
-						writePlanToFile(bestPlan, file);
+						writePlanToFile(bestPlan, solutionFile);
 					}
 				}	
 			}else if(nullCounter > nullTolerance)
@@ -263,8 +258,7 @@ public class JavaFF
 						infoOutput.println(groundingTime + planningTime);
 						infoOutput.println("Plan Cost:");
 						if (bestPlan != null) infoOutput.println(bestPlan.getCost());
-						File file = new File("resulting-plan.txt");
-						writePlanToFile(bestPlan, file);
+						writePlanToFile(bestPlan, solutionFile); 
 					}
 				}	
 			}else if(nullCounter > nullTolerance)
@@ -340,6 +334,7 @@ public class JavaFF
 
 	private static void writePlanToFile(Plan plan, File fileOut)
     {
+		System.out.println("here");
 		try
 	    {
 			FileOutputStream outputStream = new FileOutputStream(fileOut);
