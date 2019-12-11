@@ -61,7 +61,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Random;
-import java.util.LinkedList;
 
 public class JavaFF
 {
@@ -72,7 +71,8 @@ public class JavaFF
  
 	public static Random generator = null;
    
-    public static double bestH;
+   
+
 	public static PrintStream planOutput = System.out;
 	public static PrintStream parsingOutput = System.out;
 	public static PrintStream infoOutput = System.out;
@@ -138,7 +138,6 @@ public class JavaFF
 
 		// Get the initial state
 		TemporalMetricState initialState = ground.getTemporalMetricInitialState();
-		bestH = initialState.getHValue().doubleValue();
 		
                 State goalState = goalState = performFFSearch(initialState);
                 
@@ -227,14 +226,14 @@ public class JavaFF
 		State goalState = null;
 		State bestState = null;
 		State outputState = null;
-		LRTAStarSearch LRTA = new LRTAStarSearch(initialState, bestH);
+		LRTAStarSearch LRTA = new LRTAStarSearch(initialState);
 	
 		LRTA.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
 		//EHCS.setSelector(RouletteSelector.getInstance());
 		LRTA.setMaxDepth(100);
 		bestState = LRTA.search();
 	
-		if (bestState != null && bestState.goalReached()) {
+		if (bestState.goalReached()) {
 			goalState = bestState;
 			return goalState;
 		}
@@ -251,26 +250,21 @@ public class JavaFF
 		State goalState = null;
 		State outputState = null;
 		// create a Best-First Searcher
-		if (bestState != null)
-		{
-			AlmostBestFirstSearch BFS = new AlmostBestFirstSearch(bestState);
+		AlmostBestFirstSearch BFS = new AlmostBestFirstSearch(bestState);
 		
-			// ... change to using the 'all actions' neighbourhood (a null filter, as it removes nothing)
-			
-			BFS.setFilter(NullFilter.getInstance());
-			
-			// and use that
-			bestState = BFS.search();
+		// ... change to using the 'all actions' neighbourhood (a null filter, as it removes nothing)
+		
+		BFS.setFilter(NullFilter.getInstance());
+		
+		// and use that
+		bestState = BFS.search();
 
-			if (bestState != null && bestState.goalReached()) {
-				goalState = bestState;
-				return goalState;
-			}
-			
-			outputState = performFFSearch(bestState);
-			return outputState;    
-
+		if (bestState.goalReached()) {
+			goalState = bestState;
+			return goalState;
 		}
-		return bestState;
+		
+		outputState = performFFSearch(bestState);
+		return outputState;    
     }
 }

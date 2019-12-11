@@ -52,12 +52,10 @@ public class LRTAStarSearch extends Search
 	protected Filter filter = null;
 	protected SuccessorSelector selector = null;
 	protected int maxDepth = 10000;
-	protected double bestH = 100;
 
-	public LRTAStarSearch(State s, double bestH)
+	public LRTAStarSearch(State s)
 	{
 		this(s, new HValueComparator());
-		this.bestH = bestH;
 	}
 
 
@@ -118,11 +116,10 @@ public class LRTAStarSearch extends Search
 		{
 			return start;
 		}
-		double startH = bestH;
+		double startH = start.getHValue().doubleValue();
 		open = new LinkedList();
 		open.add(start); // add it to the open list
 		closed = new Hashtable();
-		double lowestVal = 0;
 
 		// initialise current heuristic value
 		LinkedList hValues = new LinkedList();
@@ -181,13 +178,12 @@ public class LRTAStarSearch extends Search
 				{
 					open.add(bestFSucc);
 					hValues.add(Math.min(currentHValue, bestFValue));
-					lowestVal = Math.min(currentHValue, bestFValue);
 				}else
 				{
 					addToClosed((State) open.removeLast());
 					hValues.removeLast();
 					depth = depth -1;
-					if (currentHValue > (startH - lowestVal)/3)
+					if (currentHValue > (startH - currentHValue)/3 )
 					{
 						return s;
 					}
