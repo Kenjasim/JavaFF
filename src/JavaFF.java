@@ -3,27 +3,27 @@
  * Department of Computer and Information Sciences,
  * University of Strathclyde, Glasgow, UK
  * http://planning.cis.strath.ac.uk/
- *
+ * 
  * Copyright 2007, Keith Halsey
  * Copyright 2008, Andrew Coles and Amanda Smith
  *
  * (Questions/bug reports now to be sent to Andrew Coles)
  *
  * This file is part of JavaFF.
- *
+ * 
  * JavaFF is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- *
+ * 
  * JavaFF is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with JavaFF.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * 
  ************************************************************************/
 
 package javaff;
@@ -45,10 +45,13 @@ import javaff.scheduling.Scheduler;
 import javaff.scheduling.JavaFFScheduler;
 import javaff.search.Search;
 import javaff.search.BestFirstSearch;
+import javaff.search.AlmostBestFirstSearch;
 import javaff.search.EnforcedHillClimbingSearch;
 import javaff.search.HillClimbingSearch;
 import javaff.search.BestSuccessorSelector;
 import javaff.search.RouletteSelector;
+import javaff.search.LRTAStarSearch;
+
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -65,10 +68,10 @@ public class JavaFF
 	public static BigDecimal MAX_DURATION = new BigDecimal("100000"); //maximum duration in a duration constraint
 	public static boolean VALIDATE = false;
 
-
+ 
 	public static Random generator = null;
-
-
+   
+   
 
 	public static PrintStream planOutput = System.out;
 	public static PrintStream parsingOutput = System.out;
@@ -78,9 +81,9 @@ public class JavaFF
 	public static void main (String args[]) {
 		EPSILON = EPSILON.setScale(2,BigDecimal.ROUND_HALF_EVEN);
 		MAX_DURATION = MAX_DURATION.setScale(2,BigDecimal.ROUND_HALF_EVEN);
-
+		
 		generator = new Random();
-
+		
 		if (args.length < 2) {
 			System.out.println("Parameters needed: domainFile.pddl problemFile.pddl [random seed] [outputfile.sol");
 
@@ -92,16 +95,16 @@ public class JavaFF
 			{
 				generator = new Random(Integer.parseInt(args[2]));
 			}
-
+	
 			if (args.length > 3)
 			{
 				solutionFile = new File(args[3]);
 			}
-
+	
 			Plan plan = plan(domainFile,problemFile);
-
+	
 			if (solutionFile != null && plan != null) writePlanToFile(plan, solutionFile);
-
+			
 		}
 	}
 
@@ -112,7 +115,7 @@ public class JavaFF
 		// Parse and Ground the Problem
 		// ********************************
 		long startTime = System.currentTimeMillis();
-
+		
 		UngroundProblem unground = PDDL21parser.parseFiles(dFile, pFile);
 
 		if (unground == null)
@@ -135,9 +138,9 @@ public class JavaFF
 
 		// Get the initial state
 		TemporalMetricState initialState = ground.getTemporalMetricInitialState();
-
+		
                 State goalState = goalState = performFFSearch(initialState);
-
+                
 		long afterPlanning = System.currentTimeMillis();
 
                 TotalOrderPlan top = null;
@@ -155,39 +158,39 @@ public class JavaFF
 		// ********************************
 
                 //TimeStampedPlan tsp = null;
-
+                
                 //if (goalState != null)
                 //{
-
+                   
                    //infoOutput.println("Scheduling");
-
+		
                    //Scheduler scheduler = new JavaFFScheduler(ground);
                    //tsp = scheduler.schedule(top);
                 //}
-
+                
 
 		//long afterScheduling = System.currentTimeMillis();
-
+		
 		//if (tsp != null) tsp.print(planOutput);
 
 		double groundingTime = (afterGrounding - startTime)/1000.00;
 		double planningTime = (afterPlanning - afterGrounding)/1000.00;
-
+		
 		//double schedulingTime = (afterScheduling - afterPlanning)/1000.00;
-
+		
 		double totalTime = groundingTime + planningTime;
 		infoOutput.println("Instantiation Time =\t\t"+groundingTime+"sec");
 		infoOutput.println("Planning Time =\t"+planningTime+"sec");
-
+		
 		//infoOutput.println("Scheduling Time =\t"+schedulingTime+"sec"); totalTime = totalTime + schedulingTime;
-
+		
 		infoOutput.println("Total execution time:");
 		infoOutput.println(groundingTime + planningTime);
-
+		
 		//#cost-problem comment the two lines below
 		infoOutput.println("Plan Cost:");
 		if (top != null) infoOutput.println(top.getCost());
-
+		
 		return top;
 	}
 
@@ -212,69 +215,56 @@ public class JavaFF
 		}
 
     }
+    
+    public static State performFFSearch(State initialState) {
+	
+		// Implementation of standard FF-style search
 
-    public static State performFFSearch(TemporalMetricState initialState) {
+		infoOutput.println("-------------Performing LRTA* Search----------------");
 
-		int r = generator.nextInt(10);
-
-	// Implementation of standard FF-style search
-
-	infoOutput.println("--------------Hill Climb With Roulette-------------------------");
-
-	// Now, initialise an EHC searcher
-	State goalState = null;
-	for (int depthBound = 5; depthBound < 100; ++depthBound) 
-	{
-		HillClimbingSearch HCS = new HillClimbingSearch(initialState);
-		HCS.setSelector(RouletteSelector.getInstance());
-		HCS.setMaxDepth(depthBound);
-		HCS.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
-		goalState = HCS.search();
-		if (goalState != null)
-		{
+		State goalState = null;
+		State bestState = null;
+		State outputState = null;
+		LRTAStarSearch LRTA = new LRTAStarSearch(initialState);
+	
+		LRTA.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
+		//EHCS.setSelector(RouletteSelector.getInstance());
+		LRTA.setMaxDepth(100);
+		bestState = LRTA.search();
+	
+		if (bestState.goalReached()) {
+			goalState = bestState;
 			return goalState;
 		}
+
+		outputState = performBFSSearch(bestState);
+		return outputState;
 	}
 
-  if (goalState == null) //if no plan
-  {
-    infoOutput.println("--------------Hill Climb With Best-------------------------");
 
-	State goalState2 = null;
-	// Try and find a plan using EHC
-	for (int depthBound = 5; depthBound < 100; ++depthBound) 
-	{
-		HillClimbingSearch HCS2 = new HillClimbingSearch(initialState);
-		HCS2.setSelector(BestSuccessorSelector.getInstance());
-		HCS2.setMaxDepth(depthBound);
-		HCS2.setFilter(HelpfulFilter.getInstance()); // and use the helpful actions neighbourhood
-		// Try and find a plan using EHC
-		goalState2 = HCS2.search();
-		if (goalState2 != null)
-		{
-			return goalState2;
-		}
-	}
-	if (goalState2 == null) // if we can't find one
-	{
-		infoOutput.println("--------------Best First Search-------------------------");
-
+	public static State performBFSSearch(State bestState) {
+	
+		infoOutput.println("-------------Best First Search----------------");
+		
+		State goalState = null;
+		State outputState = null;
 		// create a Best-First Searcher
-		BestFirstSearch BFS = new BestFirstSearch(initialState);
-
+		AlmostBestFirstSearch BFS = new AlmostBestFirstSearch(bestState);
+		
 		// ... change to using the 'all actions' neighbourhood (a null filter, as it removes nothing)
-
+		
 		BFS.setFilter(NullFilter.getInstance());
-
+		
 		// and use that
-		goalState = BFS.search();
-		return goalState; // return the plan
-	}
-	return goalState2; // return the plan
-  }
-	return goalState; // return the plan
+		bestState = BFS.search();
 
-  
-}
+		if (bestState.goalReached()) {
+			goalState = bestState;
+			return goalState;
+		}
+		
+		outputState = performFFSearch(bestState);
+		return outputState;    
+    }
 }
