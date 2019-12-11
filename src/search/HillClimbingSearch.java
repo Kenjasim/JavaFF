@@ -117,8 +117,6 @@ public class HillClimbingSearch extends Search
 			State s = removeNext(); // get the next one
 
 			if (s.getGValue().doubleValue() > maxLength){
-				System.out.println("Worse Plan Found With Cost: " + s.getGValue().doubleValue());
-				System.out.println("---------------------------------------------------------------------------");
 				return null;
 			}
 			

@@ -144,10 +144,9 @@ public class JavaFF
 		for (int i=1;i<=300;i++)
 		{
 			long newStartTime = System.currentTimeMillis();
-			System.out.println("Plan: " + i );
 			State goalState = goalState = performLRTASearch(initialState);
 			if (goalState != null)
-				{
+			{
 				long endTime = System.currentTimeMillis();
 				TotalOrderPlan tplan = (TotalOrderPlan) goalState.getSolution();
 				double length = tplan.getCost();
@@ -161,47 +160,37 @@ public class JavaFF
 					infoOutput.println("Total execution time:");
 					infoOutput.println(groundingTime + planningTime);
 					infoOutput.println("Plan Cost:");
-					if (bestPlan != null) infoOutput.println(bestPlan.getCost());
+					if (bestPlan != null){
+					infoOutput.println(bestPlan.getCost());
+					}
+					if (solutionFile != null){
 					writePlanToFile(bestPlan, solutionFile); 
+					} 
+				
+				}else if(nullCounter > nullTolerance)
+				{
+					nullCounter = 0;
+					break;
+				}
+				else
+				{
+					nullCounter++;
 				}
 			}else if(nullCounter > nullTolerance)
-			{
-				nullCounter = 0;
-				break;
-			}
-			else
-			{
-				nullCounter++;
-			}
+				{
+					nullCounter = 0;
+					break;
+				}
+				else
+				{
+					nullCounter++;
+				}
 			
 		}
-		infoOutput.println("----------------------------Running A* Search--------------------------");
-		long asStartTime = System.currentTimeMillis();
-		State ASSGoal =  performAStarSearch(initialState);
-		if (ASSGoal != null){
-			TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
-			double length = tplan.getCost();
-			long endTime = System.currentTimeMillis();
-			if(length < bestCost)
-			{
-				double groundingTime = (afterGrounding - startTime)/1000.00;
-				double planningTime = (endTime - asStartTime)/1000.00;
-				bestState = ASSGoal;
-				bestPlan = (TotalOrderPlan) bestState.getSolution();
-				bestCost = bestPlan.getCost();
-				infoOutput.println("Total execution time:");
-				infoOutput.println(groundingTime + planningTime);
-				infoOutput.println("Plan Cost:");
-				if (bestPlan != null) infoOutput.println(bestPlan.getCost());
-				writePlanToFile(bestPlan, solutionFile);
-			}
-		}
-
 		infoOutput.println("----------------------------Running Phased Succsessor Selector Search--------------------------");
 		for (int i=1;i<=300;i++)
 		{
 			long newStartTime = System.currentTimeMillis();
-			System.out.println("Plan: " + i );
 			State goalState = goalState = performRandomOneSearch(initialState, bestCost);
 			if(goalState != null)
 			{
@@ -221,9 +210,18 @@ public class JavaFF
 						infoOutput.println(groundingTime + planningTime);
 						infoOutput.println("Plan Cost:");
 						if (bestPlan != null) infoOutput.println(bestPlan.getCost());
-						writePlanToFile(bestPlan, solutionFile);
+						if (solutionFile != null) writePlanToFile(bestPlan, solutionFile);
 					}
 				}	
+				else if(nullCounter > nullTolerance)
+				{
+					nullCounter = 0;
+					break;
+				}
+				else
+				{
+					nullCounter++;
+				}
 			}else if(nullCounter > nullTolerance)
 			{
 				nullCounter = 0;
@@ -237,7 +235,6 @@ public class JavaFF
 		infoOutput.println("----------------------------Performing Random 2 Search--------------------------");
 		for (int i=1;i<=300;i++)
 		{
-			System.out.println("Plan: " + i );
 			long newStartTime = System.currentTimeMillis();
 			State goalState = goalState = performRandomTwoSearch(initialState, bestCost);
 			if(goalState != null)
@@ -257,21 +254,57 @@ public class JavaFF
 						infoOutput.println("Total execution time:");
 						infoOutput.println(groundingTime + planningTime);
 						infoOutput.println("Plan Cost:");
-						if (bestPlan != null) infoOutput.println(bestPlan.getCost());
-						writePlanToFile(bestPlan, solutionFile); 
+						if (bestPlan != null) {
+							infoOutput.println(bestPlan.getCost());
+						}
+						if (solutionFile != null) {
+							writePlanToFile(bestPlan, solutionFile);
+						} 
 					}
-				}	
-			}else if(nullCounter > nullTolerance)
-			{
-				nullCounter = 0;
-				break;
+				else if(nullCounter > nullTolerance)
+				{
+					nullCounter = 0;
+					break;
+				}
+				else
+				{
+					nullCounter++;
+				}
 			}
-			else
-			{
-				nullCounter++;
-			}
+		}else if(nullCounter > nullTolerance)
+		{
+			nullCounter = 0;
+			break;
+		}
+		else
+		{
+			nullCounter++;
+		}
 			
 		}
+
+		infoOutput.println("----------------------------Running A* Search--------------------------");
+		long asStartTime = System.currentTimeMillis();
+		State ASSGoal =  performAStarSearch(initialState);
+		if (ASSGoal != null){
+			TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
+			double length = tplan.getCost();
+			long endTime = System.currentTimeMillis();
+			if(length < bestCost)
+			{
+				double groundingTime = (afterGrounding - startTime)/1000.00;
+				double planningTime = (endTime - asStartTime)/1000.00;
+				bestState = ASSGoal;
+				bestPlan = (TotalOrderPlan) bestState.getSolution();
+				bestCost = bestPlan.getCost();
+				infoOutput.println("Total execution time:");
+				infoOutput.println(groundingTime + planningTime);
+				infoOutput.println("Plan Cost:");
+				if (bestPlan != null) infoOutput.println(bestPlan.getCost());
+				if (solutionFile != null) writePlanToFile(bestPlan, solutionFile);
+			}
+		}
+
 
 		if(bestState == null)
 		{
@@ -334,7 +367,6 @@ public class JavaFF
 
 	private static void writePlanToFile(Plan plan, File fileOut)
     {
-		System.out.println("here");
 		try
 	    {
 			FileOutputStream outputStream = new FileOutputStream(fileOut);
@@ -360,7 +392,7 @@ public class JavaFF
 		TotalOrderPlan bestPlan = null;
 		State bestState = null;
 		double bestCost = 10000;
-		int rndf = 1;
+		int rndf = 3;
 		LRTAStarSearch LRTA = new LRTAStarSearch(initialState);
 		LRTA.setFilter(RandomKFilter.getInstance(rndf));
 		LRTA.setMaxDepth(100);

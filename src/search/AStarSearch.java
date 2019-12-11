@@ -170,7 +170,7 @@ public class AStarSearch extends Search
 
         int depth = 0;
 
-        while (!open.isEmpty() && depth < 1000) // whilst still states to consider
+        while (!open.isEmpty() && depth < 3000) // whilst still states to consider
 		{
             AStarState astrcurrent = open.poll();//get the state with the best a* value
             State current = astrcurrent.getState();
