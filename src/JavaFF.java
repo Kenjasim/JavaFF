@@ -154,14 +154,15 @@ public class JavaFF
 					{
 					TotalOrderPlan tplan = (TotalOrderPlan) goalState.getSolution();
 					double length = tplan.getCost();
-					System.out.println("LRTA* Plan");
-					System.out.println("Plan Length: " + length);
-					System.out.println("---------------------------------------------------------------------------");
 					if(length < bestCost)
 					{
 						bestState=goalState;
 						bestPlan = (TotalOrderPlan) bestState.getSolution();
 						bestCost = bestPlan.getCost();
+						infoOutput.println("Total execution time:");
+						infoOutput.println(groundingTime + planningTime);
+						infoOutput.println("Plan Cost:");
+						if (bestPlan != null) infoOutput.println(bestPlan.getCost());
 					}
 				}else if(nullCounter > nullTolerance)
 				{
@@ -186,9 +187,10 @@ public class JavaFF
 					bestState = ASSGoal;
 					bestPlan = (TotalOrderPlan) bestState.getSolution();
 					bestCost = bestPlan.getCost();
-					System.out.println("A* Plan");
-					System.out.println("Plan Length: " + bestCost);
-					System.out.println("---------------------------------------------------------------------------");
+					infoOutput.println("Total execution time:");
+					infoOutput.println(groundingTime + planningTime);
+					infoOutput.println("Plan Cost:");
+					if (bestPlan != null) infoOutput.println(bestPlan.getCost());
 				}
 			}
 		}
@@ -206,13 +208,15 @@ public class JavaFF
 					double planCost = newPlan.getCost();
 					if (bestPlan != null)
 					{
-						System.out.println("Plan Length: " + bestCost);
-						System.out.println("---------------------------------------------------------------------------");
 						if(bestCost > planCost)
 						{
 							bestPlan = newPlan;
 							bestCost = newPlan.getCost();
 							bestState = goalState;
+							infoOutput.println("Total execution time:");
+							infoOutput.println(groundingTime + planningTime);
+							infoOutput.println("Plan Cost:");
+							if (bestPlan != null) infoOutput.println(bestPlan.getCost());
 						}
 					}	
 				}else if(nullCounter > nullTolerance)
@@ -239,13 +243,15 @@ public class JavaFF
 					double planCost = newPlan.getCost();
 					if (bestPlan != null)
 					{
-						System.out.println("Plan Length: " + bestCost);
-						System.out.println("---------------------------------------------------------------------------");
 						if(bestCost > planCost)
 						{
 							bestPlan = newPlan;
 							bestCost = newPlan.getCost();
 							bestState = goalState;
+							infoOutput.println("Total execution time:");
+							infoOutput.println(groundingTime + planningTime);
+							infoOutput.println("Plan Cost:");
+							if (bestPlan != null) infoOutput.println(bestPlan.getCost());
 						}
 					}	
 				}else if(nullCounter > nullTolerance)
