@@ -40,7 +40,7 @@ import javaff.planning.TemporalMetricState;
 import javaff.planning.RelaxedTemporalMetricPlanningGraph;
 import javaff.planning.HelpfulFilter;
 import javaff.planning.NullFilter;
-import javaff.planning.RandomThreeFilter;
+import javaff.planning.RandomKFilter;
 import javaff.scheduling.Scheduler;
 import javaff.scheduling.JavaFFScheduler;
 import javaff.search.Search;
@@ -138,13 +138,100 @@ public class JavaFF
 
 		// Get the initial state
 		TemporalMetricState initialState = ground.getTemporalMetricInitialState();
+		infoOutput.println("----------------------------Running LRTA* Search--------------------------");
+		TotalOrderPlan bestPlan = null;
+		State bestState = null;
+		double bestCost = 10000;
+		for (int i=1;i<=300;i++)
+		{
+			System.out.println("Plan: " + i );
+			State goalState = goalState = performLRTASearch(initialState);
+			if (goalState != null)
+				{
+				TotalOrderPlan tplan = (TotalOrderPlan) goalState.getSolution();
+				double length = tplan.getCost();
+				System.out.println("LRTA* Plan");
+				System.out.println("Plan Length: " + length);
+				System.out.println("---------------------------------------------------------------------------");
+				if(length < bestCost)
+				{
+					bestState=goalState;
+					bestPlan = (TotalOrderPlan) bestState.getSolution();
+					bestCost = bestPlan.getCost();
+				}
+			}
+		}
+		infoOutput.println("----------------------------Running A* Search--------------------------");
+		State ASSGoal =  performAStarSearch(initialState);
+		if (ASSGoal != null){
+			TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
+			double length = tplan.getCost();
+			if(length < bestCost)
+			{
+				bestState = ASSGoal;
+				bestPlan = (TotalOrderPlan) bestState.getSolution();
+				bestCost = bestPlan.getCost();
+				System.out.println("A* Plan");
+				System.out.println("Plan Length: " + bestCost);
+				System.out.println("---------------------------------------------------------------------------");
+			}
+		}
 
-                State goalState = goalState = performFFSearch(initialState);
+		infoOutput.println("----------------------------Running Phased Succsessor Selector Search--------------------------");
+		for (int i=1;i<=300;i++)
+		{
+			System.out.println("Plan: " + i );
+			State goalState = goalState = performRandomOneSearch(initialState, bestCost);
+			if(goalState != null)
+			{
+				TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
+				double planCost = newPlan.getCost();
+				if (bestPlan != null)
+				{
+					System.out.println("Plan Length: " + bestCost);
+					System.out.println("---------------------------------------------------------------------------");
+					if(bestCost > planCost)
+					{
+						bestPlan = newPlan;
+						bestCost = newPlan.getCost();
+						bestState = goalState;
+					}
+				}	
+			}
+		}
+		infoOutput.println("----------------------------Performing Random 2 Search--------------------------");
+		for (int i=1;i<=300;i++)
+		{
+			System.out.println("Plan: " + i );
+			State goalState = goalState = performRandomTwoSearch(initialState, bestCost);
+			if(goalState != null)
+			{
+				TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
+				double planCost = newPlan.getCost();
+				if (bestPlan != null)
+				{
+					System.out.println("Plan Length: " + bestCost);
+					System.out.println("---------------------------------------------------------------------------");
+					if(bestCost > planCost)
+					{
+						bestPlan = newPlan;
+						bestCost = newPlan.getCost();
+						bestState = goalState;
+					}
+				}	
+			}
+		}
 
+		if(bestState == null)
+		{
+			bestState = performBestFirstSearch(initialState);
+		}
+
+        
 		long afterPlanning = System.currentTimeMillis();
 
                 TotalOrderPlan top = null;
-		if (goalState != null) top = (TotalOrderPlan) goalState.getSolution();
+		if (bestState != null) top = (TotalOrderPlan) bestState.getSolution();
 		if (top != null) top.print(planOutput);
 
 
@@ -216,135 +303,68 @@ public class JavaFF
 
     }
 
-    public static State performFFSearch(TemporalMetricState initialState) {
-
-		int r = generator.nextInt(10);
-
-	// Implementation of standard FF-style search
-
-	infoOutput.println("----------------------------Preforming Optimising Task--------------------------");
-	infoOutput.println("----------------------------Running LRTA* Search--------------------------");
-	TotalOrderPlan bestPlan = null;
-	State bestState = null;
-	double bestCost = 10000;
-	for (int i=1;i<=300;i++)
+	public static State performLRTASearch(TemporalMetricState initialState)
 	{
-		System.out.println("Plan: " + i );
+		TotalOrderPlan bestPlan = null;
+		State bestState = null;
+		double bestCost = 10000;
+		int rndf = 1;
 		LRTAStarSearch LRTA = new LRTAStarSearch(initialState);
-		LRTA.setFilter(RandomThreeFilter.getInstance());
+		LRTA.setFilter(RandomKFilter.getInstance(rndf));
+		LRTA.setMaxDepth(100);
 		State LRTAGoal = LRTA.search();
 		if (LRTAGoal != null)
 		{
-			if (bestState != null)
-			{
-				TotalOrderPlan tplan = (TotalOrderPlan) bestState.getSolution();
-				double length = tplan.getCost();
-				System.out.println("LRTA* Plan");
-				System.out.println("Plan Length: " + length);
-				System.out.println("---------------------------------------------------------------------------");
-				if(length < bestCost)
-				{
-					bestState=LRTAGoal;
-					bestPlan = (TotalOrderPlan) bestState.getSolution();
-					bestCost = bestPlan.getCost();
-				}
-			}else
-			{
-				bestState=LRTAGoal;
-				bestPlan = (TotalOrderPlan) bestState.getSolution();
-				bestCost = bestPlan.getCost();
-				System.out.println("LRTA* Plan");
-				System.out.println("Plan Length: " + bestCost);
-				System.out.println("---------------------------------------------------------------------------");
-			}
+			return LRTAGoal;
 		}
+		return null;
 	}
-	infoOutput.println("----------------------------Running A* Search--------------------------");
-	AStarSearch ASS = new AStarSearch(initialState);
-	ASS.setFilter(HelpfulFilter.getInstance());
-	State ASSGoal = ASS.search();
-	if (ASSGoal != null)
-	{
-		TotalOrderPlan tplan = (TotalOrderPlan) ASSGoal.getSolution();
-		double length = tplan.getCost();
-		if(length < bestCost)
-		{
-			bestState = ASSGoal;
-			bestPlan = (TotalOrderPlan) bestState.getSolution();
-			bestCost = bestPlan.getCost();
-			System.out.println("A* Plan");
-			System.out.println("Plan Length: " + bestCost);
-			System.out.println("---------------------------------------------------------------------------");
-		}
-	}
-	infoOutput.println("----------------------------Running Phased Succsessor Selector Search--------------------------");
 
-	// Now, initialise an EHC searcher
-	State goalState = null;
-	for (int i=1;i<=300;i++)
+	public static State performAStarSearch(TemporalMetricState initialState)
 	{
-		System.out.println("Plan: " + i );
+		AStarSearch ASS = new AStarSearch(initialState);
+		ASS.setFilter(HelpfulFilter.getInstance());
+		State ASSGoal = ASS.search();
+		if (ASSGoal != null)
+		{
+			return ASSGoal;
+		}
+		return null; 
+
+	}
+	public static State performRandomOneSearch(TemporalMetricState initialState, double bestCost)
+	{
 		HillClimbingSearch HCS = new HillClimbingSearch(initialState, bestCost);
 		HCS.setSelector(BestSuccessorSelector.getInstance());
 		HCS.setMaxDepth(100);
-		HCS.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
+		HCS.setFilter(RandomKFilter.getInstance(3)); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
-		goalState = HCS.search();
+		State goalState = HCS.search();
 		if (goalState != null)
 		{
-			TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
-			double planCost = newPlan.getCost();
-			if (bestPlan != null)
-			{
-				System.out.println("Plan Length: " + bestCost);
-				System.out.println("---------------------------------------------------------------------------");
-				if(bestCost > planCost)
-				{
-					bestPlan = newPlan;
-					bestCost = newPlan.getCost();
-					bestState = goalState;
-				}
-			}
+			return goalState;
 		}
-
+		return null;
 	}
-	infoOutput.println("----------------------------Performing Random 2 Search--------------------------");
-	for (int i=1;i<=200;i++)
+
+	public static State performRandomTwoSearch(TemporalMetricState initialState, double bestCost)
 	{
-		System.out.println("Plan: " + i);
 		HillClimbingSearch HCS = new HillClimbingSearch(initialState, bestCost);
 		HCS.setSelector(TwoRandomSuccessorSelector.getInstance());
 		HCS.setMaxDepth(100);
-		HCS.setFilter(RandomThreeFilter.getInstance()); // and use the helpful actions neighbourhood
+		HCS.setFilter(RandomKFilter.getInstance(1)); // and use the helpful actions neighbourhood
 		// Try and find a plan using EHC
-		goalState = HCS.search();
+		State goalState = HCS.search();
 		if (goalState != null)
 		{
-			TotalOrderPlan newPlan = (TotalOrderPlan) goalState.getSolution();
-			double planCost = newPlan.getCost();
-			if (bestPlan != null)
-			{
-				System.out.println("Plan Length: " + planCost);
-				System.out.println("---------------------------------------------------------------------------");
-				if(bestCost > planCost)
-				{
-					bestPlan = newPlan;
-					bestCost = newPlan.getCost();
-					bestState = goalState;
-				}
-			}
+			return goalState;
 		}
-
+		return null;
 	}
 
-	if (bestState != null)
+	public static State performBestFirstSearch(TemporalMetricState initialState)
 	{
-		return bestState;
-	}else  //if no plan
-  	{
-		infoOutput.println("EHC failed, using best-first search, with all actions");
-
-		// create a Best-First Searcher
+		infoOutput.println("----------------------------Best First Search--------------------------");
 		BestFirstSearch BFS = new BestFirstSearch(initialState);
 
 		// ... change to using the 'all actions' neighbourhood (a null filter, as it removes nothing)
@@ -352,10 +372,9 @@ public class JavaFF
 		BFS.setFilter(NullFilter.getInstance());
 
 		// and use that
-		goalState = BFS.search();
+		State goalState = BFS.search();
 		return goalState; // return the plan
+
 	}
 
-  
-}
 }

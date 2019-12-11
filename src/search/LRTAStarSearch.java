@@ -3,165 +3,195 @@
  * Department of Computer and Information Sciences,
  * University of Strathclyde, Glasgow, UK
  * http://planning.cis.strath.ac.uk/
- * 
+ *
  * Copyright 2007, Keith Halsey
  * Copyright 2008, Andrew Coles and Amanda Smith
  *
  * (Questions/bug reports now to be sent to Andrew Coles)
  *
  * This file is part of JavaFF.
- * 
+ *
  * JavaFF is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * JavaFF is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with JavaFF.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
+* Edited by Daniel Crouch, Nov 2019
  ************************************************************************/
 
 package javaff.search;
 
 import javaff.planning.State;
 import javaff.planning.Filter;
-import javaff.search.SuccessorSelector;
-import javaff.search.LRTAStarState;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.PriorityQueue;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.Comparator;
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.lang.Math;
 
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.HashSet;
+
 
 public class LRTAStarSearch extends Search
 {
+
 	protected Hashtable closed;
 	protected LinkedList open;
-    protected Filter filter = null;
+	protected Filter filter = null;
 	protected SuccessorSelector selector = null;
-	protected int randValue;
-	protected int maxDepth;
-	protected int restartbound;
-	protected int depthBound;
-	
+	protected int maxDepth = 10000;
+
 	public LRTAStarSearch(State s)
 	{
 		this(s, new HValueComparator());
 	}
 
+
 	public LRTAStarSearch(State s, Comparator c)
 	{
 		super(s);
 		setComparator(c);
-		
+
 		closed = new Hashtable();
 		open = new LinkedList();
 	}
+
 
 	public void setFilter(Filter f)
 	{
 		filter = f;
 	}
 
-	public void setSelector (SuccessorSelector s)
+	public void setSelector(SuccessorSelector s)
 	{
 		selector = s;
 	}
 
-    public LRTAStarState removeNext()
+	public State removeNext()
 	{
-			
-		return (LRTAStarState) ((LinkedList) open).removeFirst();
+		return (State) ((LinkedList) open).removeLast();
 	}
-    public boolean needToVisit(State s) {
+
+	public void setMaxDepth(int d)
+	{
+		maxDepth = d;
+	}
+
+
+	public boolean needToVisit(State s) {
 		Integer Shash = new Integer(s.hashCode()); // compute hash for state
 		State D = (State) closed.get(Shash); // see if its on the closed list
-		
-		if (closed.containsKey(Shash) && D.equals(s)) return false;  // if it is return false
-		
-		closed.put(Shash, s); // otherwise put it on
+
+		if (closed.containsKey(Shash) && D.equals(s))
+		{
+			// javaff.JavaFF.infoOutput.println("Found a closed state");
+			return false;  // if it is return false
+		}
+		else if (closed.containsKey(Shash) && !D.equals(s))
+		{
+			return false;
+		}
+
 		return true; // and return true
 	}
-	
-    public State search()
-    {
-        if (start.goalReached()) { // wishful thinking
+
+	public void addToClosed(State s) {
+		Integer Shash = new Integer(s.hashCode()); // compute hash for state
+		closed.put(Shash, s); // put it on closed list
+	}
+
+
+	public State search()
+	{
+		// check if initial state is a goal, if not set to first state
+		if (start.goalReached())
+		{
 			return start;
 		}
-        LRTAStarState lrtastrstart = new LRTAStarState(start, start.getHValue().doubleValue());
-		open.add(lrtastrstart);
+		open.add(start); // add it to the open list
 
-        while (!open.isEmpty()) // whilst still states to consider
+		// initialise current heuristic value
+		LinkedList hValues = new LinkedList();
+		hValues.add(start.getHValue().doubleValue());
+
+		// keep track of search depth
+		int depth = 0;
+
+		// whilst still states to consider and depth not exceeded
+		while (!open.isEmpty()  && depth < maxDepth) // whilst still states to consider
 		{
-            LRTAStarState lrtastrcurrent = removeNext();//get the next state on the open list
-            State current = lrtastrcurrent.getState();
-            if (needToVisit(current))
-            {
+			// Consider open states
+			State s = (State) open.getLast(); // get the next one
+			double currentHValue = (double) hValues.getLast();
+			addToClosed(s); // add to closed list
+			Set successors = s.getNextStates(filter.getActions(s)); // and find its neighbourhood
 
-                if (current.goalReached()) { // check if the current is the goal state
-                    System.out.println("Found Goal");
-                    return current;
-                }
-                double g_value = current.getGValue().doubleValue();
-                double h_value = lrtastrcurrent.getHValue();
-                double f_value = g_value + h_value;
+			// initialise record of best successor based on F function (cost + heuristic)
+			double bestFValue = 10000;
+			State bestFSucc = null;
 
-                Set successors = current.getNextStates(filter.getActions(current)); // find the adjacent nodes
+			// iterate through successors to find best FValue
+			Iterator succItr = successors.iterator();
+			while (succItr.hasNext())
+			{
+				State succ = (State) succItr.next(); // next successor
 
-                Iterator succItr = successors.iterator();
-                State bestState = null;
+				if (needToVisit(succ))
+				{
+					// calculate best F Value
+					double FValue = (succ.getGValue().doubleValue()
+													 - s.getGValue().doubleValue())
+													 + succ.getHValue().doubleValue();
+					if (FValue < bestFValue)
+					{
+						bestFValue = FValue;
+						bestFSucc = succ;
+					}
+				}
+			}
 
-                while (succItr.hasNext()) {
-                    State child = (State) succItr.next(); // next successor
-                    double temp_g_value = child.getGValue().doubleValue();
-                    double temp_h_value = child.getHValue().doubleValue();
-                    double temp_f_value = temp_g_value + temp_h_value;
-                    if(bestState == null)
-                    {
-                        bestState = child;
-                        LRTAStarState bestLRTA = new LRTAStarState(bestState, temp_h_value);
-                        open = new LinkedList();
-                        open.add(bestLRTA);
-                    }else
-                    {
-                        double best_h = bestState.getHValue().doubleValue();
-                        double best_g = bestState.getGValue().doubleValue();
-                        double best_f = best_g + best_h;
-                        if(best_f > temp_f_value)
-                        {
-                            bestState = child;
-                            LRTAStarState bestLRTA = new LRTAStarState(bestState, temp_h_value);
-                            open = new LinkedList();
-                            open.add(bestLRTA);
-                        }
-                    }
-                }
-                double best_h = bestState.getHValue().doubleValue();
-                double best_g = bestState.getGValue().doubleValue();
-                double best_f = best_g + best_h;
-                if (h_value < best_f)
-                {
-                    lrtastrcurrent.setHValue(best_f);
-                }
+			// set current current heuristic value
+			if (s.goalReached())
+			{
+				return s;
+			}
+			else
+			{
+				if (bestFSucc != null && depth < maxDepth -1)
+				{
+					open.add(bestFSucc);
+					hValues.add(Math.min(currentHValue, bestFValue));
+				}else
+				{
+					open.removeLast();
+					hValues.removeLast();
+					if (depth == maxDepth -1)
+					{
+						depth = depth -1;
+					}
+				}
+			}
 
-            }else
-            {
-                return null;
-            }
-        }
-        return null;
-    }
-    }
+			// increase depth
+			depth ++;
+			if (depth == maxDepth)
+			{
+				javaff.JavaFF.infoOutput.println("Max depth exceeded " + depth + "/" + maxDepth + ", restarting...");
+			}
+		}
 
+		return null;
+	}
+}

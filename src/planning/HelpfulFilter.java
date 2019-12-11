@@ -44,7 +44,7 @@ public class HelpfulFilter implements Filter
 
 	public static HelpfulFilter getInstance()
 	{
-		if (hf == null) hf = new HelpfulFilter(); // Singleton, as in NullFilter
+		hf = new HelpfulFilter(); // Singleton, as in NullFilter
 		return hf;
 	}
 

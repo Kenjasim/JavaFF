@@ -38,27 +38,29 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class RandomThreeFilter implements Filter
+public class RandomKFilter implements Filter
 {
-	private static RandomThreeFilter rf = null;
+	private static RandomKFilter rf = null;
 	protected HelpfulFilter hf;
+	static int k = 3;
 
-	private RandomThreeFilter()
+	private RandomKFilter()
 	{
 		hf = HelpfulFilter.getInstance();
 	}
 
-	public static RandomThreeFilter getInstance()
+	public static RandomKFilter getInstance(int j)
 	{
-		if (rf == null) rf = new RandomThreeFilter(); // Singleton design pattern - return one central instance
+		if (rf == null) rf = new RandomKFilter(); // Singleton design pattern - return one central instance
+		k = j;
 		return rf;
 	}
 
-	public static Set randomThree(Set st) {
+	public static Set randomK(Set st) {
 		List<Action> copy = new ArrayList<Action>(st);
 		Collections.shuffle(copy);
 		try{
-			copy = copy.subList(0, 3);
+			copy = copy.subList(0, k);
 		}catch(Exception e)
 		{
 			copy = copy;
@@ -70,7 +72,7 @@ public class RandomThreeFilter implements Filter
 	public Set getActions(State S) 
 	{
 		Set helpfulActions = hf.getActions(S);
-		Set subset = randomThree(helpfulActions);
+		Set subset = randomK(helpfulActions);
 		return subset;
 	}
 

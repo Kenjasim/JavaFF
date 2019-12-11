@@ -145,13 +145,11 @@ public class AStarSearch extends Search
             if (state.hashCode() == s.hashCode())
             {
                 if(original_f_value > f_value){
-                    System.out.println("Bigger");
                     a.setState(s);
                     a.setFValue(f_value);
                     return true;
                 }else
                 {
-                    System.out.println("Not");
                     return true;
                 }
             }
@@ -170,10 +168,10 @@ public class AStarSearch extends Search
 		
 		needToVisit(start, start_f_value);
 
-        while (!open.isEmpty() && open.size() < 20000) // whilst still states to consider
+        int depth = 0;
+
+        while (!open.isEmpty() && depth < 1000) // whilst still states to consider
 		{
-            System.out.println("Open List SIze:" + open.size());
-            System.out.println("Closed List SIze:" + closed.size());
             AStarState astrcurrent = open.poll();//get the state with the best a* value
             State current = astrcurrent.getState();
             if (current.goalReached()) { // check if the current is the goal state
@@ -204,7 +202,7 @@ public class AStarSearch extends Search
                     open.add(astrchild);
                 }
             }
-
+            depth++;
         }
         System.out.println("Failed: " + open.size());
         return null;
